@@ -1,0 +1,174 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@font-face {
+  font-family: iransans;
+  src: url('../public/fonts/IRANSans.ttf');
+  font-weight: 400;
+}
+
+
+@font-face {
+  font-family: iransans;
+  src: url('../public/fonts/IRANSans(FaNum)_Bold.ttf');
+  font-weight: 700;
+}
+
+@layer base {
+
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
+body {
+  font-family: iransans !important;
+  font-weight: 400;
+
+}
+
+* {
+  font-family: iransans !important;
+}
+
+
+.Table__itemCount {
+  /* margin-top: 10px; */
+  font-size: 14px;
+}
+
+.Table__pagination {
+  display: flex;
+  justify-content: flex-end;
+  padding: 20px 10px;
+}
+
+.Table__pageButton {
+  font-size: 15px;
+  outline: none;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.Table__pageButton:disabled {
+  cursor: not-allowed;
+  color: gray;
+}
+
+.Table__pageButton--active {
+  color: #45b3e3;
+  font-weight: bold;
+}
+
+.MuiButtonBase-root {
+  padding-left: 10px;
+}
+
+.css-1g86id8-MuiTreeItem-content.Mui-disabled {
+  opacity: 1;
+}
+
+.css-yuu8jj.Mui-disabled {
+  opacity: 1;
+}
+
+.MuiAutocomplete-hasPopupIcon.css-16awh2u-MuiAutocomplete-root .MuiAutocomplete-inputRoot,
+.MuiAutocomplete-hasClearIcon.css-16awh2u-MuiAutocomplete-root .MuiAutocomplete-inputRoot {
+  border: 0;
+}
+
+.numberCircle {
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  padding: 1px;
+  float: left;
+
+  background: rgb(255, 0, 0);
+  color: rgb(255, 255, 255);
+  text-align: center;
+
+  font: 12px Arial, sans-serif;
+}
+
+.round {
+  width: 27px;
+  height: 27px;
+}
+
+
+
+
+html {
+  height: 100%;
+}
+
+
+
+.forbiddentext-wrapper {
+  height: 100vh;
+  width: 100%;
+  background-color: #233142;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.forbiddensubtitle {
+  font-size: 20px;
+  font-weight: 500;
+  color: #facf5a;
+}
+
+
+.forbidenbuttons {
+  margin: 30px;
+  font-weight: 700;
+  border: 2px solid #f95959;
+  text-decoration: none;
+  padding: 15px;
+  text-transform: uppercase;
+  color: #f95959;
+  border-radius: 26px;
+  transition: all 0.2s ease-in-out;
+  display: inline-block;
+}
+
+.forbidenbuttons:hover {
+  background-color: #f82f2f;
+  color: white;
+  transition: all 0.2s ease-in-out;
+}
+
+.full-height {
+  overflow-x: hidden;
+  height: 100vh;
+}
+
+.podbar {
+  bottom: 0;
+  width: 100%;
+  position: fixed;
+}
+
+.p-organizationchart .p-organizationchart-line-down {
+  background: black !important;
+
+}
+
+.p-organizationchart-line-top {
+  border-top-color: black !important;
+  border-color: black !important;
+}
+
+.p-organizationchart-line-left {
+  border-right-color: black !important;
+  border-color: black !important;
+}

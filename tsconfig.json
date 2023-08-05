@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "rootDir": "./",
+    "outDir": "./dist",
+    
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "incremental": true,
+    "esModuleInterop": true,
+    "module": "commonjs",
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "resolveJsonModule": true
+    
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "pages/**/*.ts", "pages/proceedingMenu/proceedingsCalendar/index.jsx", "pages/organizationalChart.jsx", "pages/companies/index.jsx", "pages/users/index.jsx", "pages/reports/expenseReport/index.jsx",],
+  "exclude": [
+    "node_modules"
+  ]
+}
