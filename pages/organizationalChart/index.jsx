@@ -5,18 +5,15 @@ import CompanyChartTable from "../../components/table/companyChartTable";
 import axios from "../../lib/axios";
 import Forbidden from "../../components/forms/forbidden";
 import navigationList from "../../components/layout/navigationList";
-import { useRouter } from 'next/router';
+import { useRouter } from "next/router";
 import { useAuth } from "../../hooks/auth";
 import { useState, useEffect } from "react";
 
-import {
-  SearchIcon,
-} from "@heroicons/react/outline";
+import { SearchIcon } from "@heroicons/react/outline";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
-
 
 export default function Login() {
   const { asPath } = useRouter();
@@ -32,7 +29,7 @@ export default function Login() {
   const { user, isLoading } = useAuth({
     middleware: "auth",
     redirectIfAuthenticated: "/",
-  })
+  });
   function CheckIfAccess(val) {
     if (currentUserRole && currentUserRole.indexOf(val) > -1) return true;
     return false;
@@ -43,16 +40,15 @@ export default function Login() {
   }
   function search(val) {
     if (data) {
-      var metingBuf = []
+      var metingBuf = [];
       if (val.length > 2) {
         setSearchHasValue(true);
         for (let i = 0; i < data.length; i++) {
           if (data[i].title.includes(val)) {
-            metingBuf = [...metingBuf, data[i]]
+            metingBuf = [...metingBuf, data[i]];
           }
         }
-      }
-      else setSearchHasValue(false);
+      } else setSearchHasValue(false);
       setSearchData(metingBuf);
     }
   }
@@ -73,30 +69,37 @@ export default function Login() {
   }, []);
 
   if (isLoading || !user) {
-    return null
+    return null;
   }
   return (
     <div>
       <SidebarMobile menu={navigationList()} loc={asPath} />
-      <SidebarDesktop menu={navigationList()} loc={asPath}
+      <SidebarDesktop
+        menu={navigationList()}
+        loc={asPath}
         setSelect={(props) => setCurrentUserRole(props.currentUserRole)}
         setActions={(props) => setCurrentUserActions(props.currentUserActions)}
         setIsHolding={(props) => setIsHolding(props.isHolding)}
-        setSuperUser={(props) => { }} />
+        setSuperUser={(props) => {}}
+      />
       <div className="md:pr-52 flex flex-col flex-1">
         <StickyHeader />
-        {!currentUserActions ? null : CheckIfAccessToPage(window.location.pathname) ?
+        {!currentUserActions ? null : CheckIfAccessToPage(
+            window.location.pathname
+          ) ? (
           <main>
             <div className="py-6">
               <div className="max-w-full mx-auto px-4 sm:px-6 md:px-8">
                 <div className="bg-white px-4 py-5 border-b border-gray-200 sm:px-6">
                   <div className="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-nowrap">
                     <div className="ml-4 mt-2">
-                      <h2 className="text-lg leading-6 font-large text-gray-900">چارت سازمانی</h2>
-                    </div>                    
+                      <h2 className="text-lg leading-6 font-large text-gray-900">
+                        چارت سازمانی
+                      </h2>
+                    </div>
                   </div>
                 </div>
-                {isHolding ?
+                {isHolding ? (
                   <div className="grid grid-cols-4 gap-y-2 gap-x-4 mb-2 ">
                     <form
                       className="w-full flex md:ml-0 mb-2 mt-4 col-span-4"
@@ -106,7 +109,7 @@ export default function Login() {
                       <label htmlFor="search-field" className="sr-only">
                         جستجو
                       </label>
-                      <div className="relative w-full text-gray-400 focus-within:text-gray-600">
+                      <div className="relative w-1/4 text-gray-400 focus-within:text-gray-600">
                         <div className="absolute inset-y-0 left-0 flex items-center pointer-events-none">
                           <SearchIcon
                             className="h-5 w-5 ml-2"
@@ -120,21 +123,29 @@ export default function Login() {
                           }}
                           id="search-field"
                           className="block w-full h-full pl-8 pr-3 py-2border border-gray-300 rounded-md shadow-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-0 focus:border-gray-300 sm:text-sm"
-                          placeholder="جستجو نام شرکت"
+                          placeholder="جستجوی نام شرکت"
                           type="text"
                           name="search"
                         />
                       </div>
                     </form>
-
-                  </div> : null}
+                  </div>
+                ) : null}
               </div>
               <div className="w-full px-4 sm:px-6 md:px-8">
-                {currentUserRole ?
-                  <CompanyChartTable loadingData={false} data={searchHasValue ? searchData : data} roleData={currentUserRole} /> : null}
+                {currentUserRole ? (
+                  <CompanyChartTable
+                    loadingData={false}
+                    data={searchHasValue ? searchData : data}
+                    roleData={currentUserRole}
+                  />
+                ) : null}
               </div>
             </div>
-          </main> : <Forbidden />}
+          </main>
+        ) : (
+          <Forbidden />
+        )}
       </div>
     </div>
   );

@@ -92,7 +92,6 @@ export default function EditPost() {
             setErrors(error.response.data.message);
         }
     };
-
     useEffect(() => {
         async function getData() {
             await axios.get("api/v1/company/post/list").then((response) => {

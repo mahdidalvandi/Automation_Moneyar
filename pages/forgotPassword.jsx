@@ -19,7 +19,7 @@ export default function Index() {
     const [otp, setOtp] = useState("");
     const [otpSend, setOtpSend] = useState(false);
     const [showReset, setShowReset] = useState(false);
-    
+    const [gtp , setGtp]= useState(false);
 
     const [minutes, setMinutes] = useState(2);
     const [seconds, setSeconds] = useState(0);
@@ -78,6 +78,7 @@ export default function Index() {
                 setSeconds(0);
                 object = {};
                 setErrors(object);
+                setGtp(true)
             }
         } catch (error) {
             object['master'] = error.response.data.message;
@@ -141,22 +142,18 @@ export default function Index() {
 
     return (
         <div
-            className="h-screen min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8"
-            style={{
-                background: `url(/images/Background.png)`,
-                backgroundSize: "cover",
-            }}
+            className="h-screen bg-[#ECECEC] min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8"
         >
-            <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+            <div className="sm:mx-auto sm:w-full sm:max-w-md">
                 <form
                     onSubmit={submitForm}
-                    className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10"
+                    className="py-8 px-4 sm:rounded-lg sm:px-10"
                 >
-                    <p className="text-center text-lg mb-6">بازیابی رمز عبور</p>
-                    <div className="space-y-6">
-
+                    {!gtp ?<>
+                    <p className="text-center text-lg mb-4">بازیابی رمز عبور</p>
+                    <p className="text-center text-[#666666]">کد بازیابی به موبایل شما فرستاده خواهد شد</p>
                         <InputBox
-                            title="کد ملی"
+                            placeholder={"کد ملی"}
                             name={"ncode"}
                             value={ncode}
                             diabled={otpSend ? "true" : "false"}
@@ -164,9 +161,9 @@ export default function Index() {
                             error={errors["ncode"]}
                             type="text"
                             isrequired="true"
+                        
                         />
-
-
+                  
                         <button
                             onClick={getOtp}
                             disabled={otpSend}
@@ -181,22 +178,25 @@ export default function Index() {
                             text-sm
                             font-medium
                             text-white
-                            ${!otpSend? `bg-amber-500`: `bg-gray-500`}
-                            ${!otpSend? `hover:bg-amber-600`: `hover:bg-gray-600`}                            
+                            ${!otpSend? `bg-[#7ACC9D]`: `bg-gray-500`}
+                            ${!otpSend? `hover:bg-[#65aa83]`: `hover:bg-gray-600`}                            
                             focus:outline-none
                             focus:ring-2
                             focus:ring-offset-2
                             focus:ring-amber-500 w-full`}
                         >
-                            {!otpSend ? " دریافت کد یکبار مصرف" : minutes === 0 && seconds === 0
-                                ? " دریافت کد یکبار مصرف"
+                            {!otpSend ? " دریافت کد" : minutes === 0 && seconds === 0
+                                ? " دریافت کد "
                                 : <h1>دریافت مجدد کد {`0${minutes}`}:{seconds < 10 ? `0${seconds}` : seconds}</h1>
                             }
-                        </button>
+                        </button> 
+                        </>:null}
+                    
                         {showReset ?
                             <>
+                                 <p className="text-center text-lg mb-4">بازیابی رمز عبور</p>
                                 <InputBox
-                                    title="کد یکبار مصرف"
+                                    placeholder="کد بازیابی"
                                     name={"otpCode"}
                                     error={errors["otpCode"]}
                                     onChange={(event) =>
@@ -205,7 +205,7 @@ export default function Index() {
                                     isrequired="true"
                                 />
                                 <InputBox
-                                    title="رمز عبور جدید"
+                                    placeholder="رمز عبور جدید"
                                     name={"newPassword"}
                                     error={errors["newPassword"]}
                                     onChange={(event) =>
@@ -215,7 +215,7 @@ export default function Index() {
                                     isrequired="true"
                                 />
                                 <InputBox
-                                    title="تکرار رمز عبور جدید"
+                                    placeholder="تکرار رمز عبور جدید"
                                     name={"newPasswordRepeat"}
                                     error={errors["newPasswordRepeat"]}
                                     onChange={(event) =>
@@ -224,14 +224,15 @@ export default function Index() {
                                     autoComplete="current-password"
                                     type="password"
                                     isrequired="true"
+                                    
                                 />
-
-
                                 <div>{/* <Button text="ورود" color="amber" /> */}</div>
+                                
                                 <button
                                     onClick={changePassword}
-                                    className="flex
+                                    className="flex   
                             justify-center
+                            mt-4
                             py-2
                             px-4
                             border
@@ -241,15 +242,45 @@ export default function Index() {
                             text-sm
                             font-medium
                             text-white
-                            bg-amber-500
-                            hover:bg-amber-600
+                            bg-[#7ACC9D]
+                            hover:bg-[#5ca17a]
                             focus:outline-none
                             focus:ring-2
                             focus:ring-offset-2
                             focus:ring-amber-500 w-full"
                                 >
-                                    تغییر رمز عبور
-                                </button></> : null}
+                            تایید
+                                </button>
+                                <button
+                               onClick={getOtp}
+                               disabled={otpSend}
+                               className={`flex
+                               justify-center
+                               mt-8
+                               py-2
+                               px-4
+                               border
+                               border-transparent
+                               rounded-md
+                               shadow-sm
+                               text-sm
+                               font-medium
+                               text-white
+                               ${!otpSend? `bg-[#7ACC9D]`: `bg-gray-500`}
+                               ${!otpSend? `hover:bg-[#65aa83]`: `hover:bg-gray-600 cursor-not-allowed`}                            
+                               focus:outline-none
+                               focus:ring-2
+                               focus:ring-offset-2
+                               focus:ring-amber-500 w-full`}
+                           >
+                               {!otpSend ? " دریافت مجدد کد" : minutes === 0 && seconds === 0
+                                         ? " دریافت کد "
+                                        : <h1>ارسال مجدد کد بعد از {`0${minutes}`}:{seconds < 10 ? `0${seconds}` : seconds}</h1>
+                                      } 
+                                 
+                                      </button>
+                               </> : null}
+                       
                         {errors["master"] ? (
                             <span className="text-sm text-red-500">
                                 {
@@ -259,7 +290,7 @@ export default function Index() {
                                 }
                             </span>
                         ) : null}
-                    </div>
+                    
 
                 </form>
             </div>

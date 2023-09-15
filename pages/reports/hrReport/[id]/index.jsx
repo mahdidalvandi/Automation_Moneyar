@@ -400,7 +400,6 @@ export default function OrganizationalChart() {
                 var ageBufData = _.cloneDeep(ageChartData);
                 var hrBufData = _.cloneDeep(hrBarData);
 
-
                 genderBufData.labels = ['زن', 'مرد', 'ثبت نشده'];
                 genderBufData.datasets[0].data = res.data.data.gender_data;
                 setGenderData(genderBufData);

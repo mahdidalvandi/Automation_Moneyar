@@ -30,7 +30,6 @@ export default function Activation(props) {
         } catch (error) {
         }
     };
-    // console.log('uuid',uuid,'-bookmark:',bookMarkState,'-props:',props.bookMarked)
     return (
         <button onClick={(e) => handleChange()} className="ml-2" >
             {bookMarkState ?

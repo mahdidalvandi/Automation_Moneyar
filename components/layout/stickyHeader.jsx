@@ -1,9 +1,9 @@
 import {
-    BellIcon,
-    MenuAlt2Icon,
-    LogoutIcon,
-    UserCircleIcon,
-    KeyIcon,
+  BellIcon,
+  MenuAlt2Icon,
+  LogoutIcon,
+  UserCircleIcon,
+  KeyIcon,
 } from "@heroicons/react/outline";
 import Image from "next/image";
 import Link from "next/link";
@@ -12,220 +12,169 @@ import { useState } from "react";
 import { loadImageFromServer } from "../../lib/helper";
 import { useRouter } from "next/router";
 import axios from "../../lib/axios";
-import WeatherWidget_Ip from "../../components/forms/weather"
-
-
+import WeatherWidget_Ip from "../../components/forms/weather";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import avatar from "../../public/images/avatar.png";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 function StickyHeader() {
-    const [sidebarOpen, setSidebarOpen] = useState(true);
-    const { asPath } = useRouter();
-    const [selectedCompany, setCompany] = useState(null);
-    const [companyArray, setCompantArray] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const { asPath } = useRouter();
+  const [selectedCompany, setCompany] = useState(null);
+  const [companyArray, setCompantArray] = useState(null);
+  const [opened, setOpened] = useState(false);
+  const openDrop = () => {
+    setOpened(!opened);
+  };
 
-    const myLoader = ({ src, width, quality }) => {
-        return loadImageFromServer(`${src}?w=${width}&q=${quality || 75}`);
-    };
+  const myLoader = ({ src, width, quality }) => {
+    return loadImageFromServer(`${src}?w=${width}&q=${quality || 75}`);
+  };
 
-    const { user, logout } = useAuth({
-        middleware: "auth",
-        redirectIfAuthenticated: "/dashboard",
+  const { user, logout } = useAuth({
+    middleware: "auth",
+    redirectIfAuthenticated: "/dashboard",
+  });
+
+  function logoutHandler() {
+    logout();
+  }
+  function setCurrentCompany(e) {
+    const response = axios({
+      method: "post",
+      url: "api/v1/user/company/current",
+      data: { company_uuid: e },
+    }).then((response) => {
+      window.location.assign("/dashboard/");
     });
+  }
 
-    function logoutHandler() {
-        logout();
-    }
-    function setCurrentCompany(e) {
-
-        const response = axios({
-            method: "post",
-            url: "api/v1/user/company/current",
-            data: { "company_uuid": e },
-        }).then((response) => {
-            window.location.assign("/dashboard/");
-        });
-    }
-
-    return (
-        <div className="sticky top-0 z-10 flex-shrink-0 flex h-12 bg-white shadow">
-            <button
-                type="button"
-                className="px-4 border-r border-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-amber-500 md:hidden"
-                onClick={() => setSidebarOpen(true)}
+  return (
+    <div className="sticky top-0 z-10 flex-shrink-0 flex h-12 bg-white shadow">
+      <button
+        type="button"
+        className="px-4 border-r border-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-amber-500 md:hidden"
+        onClick={() => setSidebarOpen(true)}
+      >
+        <span className="sr-only"></span>
+        <MenuAlt2Icon className="h-6 w-6" aria-hidden="true" />
+      </button>
+      <div className="flex-1 px-4 flex justify-between">
+        <div className="flex-1 flex">{/* <WeatherWidget_Ip /> */}</div>
+        <div className="ml-1 flex items-center md:ml-3 ">
+          {user ? (
+            <select
+              value={user.company_uuid}
+              onChange={(company) => {
+                setCurrentCompany(company.currentTarget.value);
+              }}
+              className="bg-left pr-3 left-4 bg-[#F0F0F0] relative items-center px-4 py-2 border
+             border-[#F0F0F0] shadow-sm text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50"
             >
-                <span className="sr-only"></span>
-                <MenuAlt2Icon className="h-6 w-6" aria-hidden="true" />
-            </button>
-            <div className="flex-1 px-4 flex justify-between">
-                <div className="flex-1 flex">
-                    <WeatherWidget_Ip />
-                    {/* <form
-                        className="w-full flex md:ml-0"
-                        action="#"
-                        method="GET"
-                    >
-                        <label htmlFor="search-field" className="sr-only">
-                            جستجو
-                        </label>
-                        <div className="relative w-full text-gray-400 focus-within:text-gray-600">
-                            <div className="absolute inset-y-0 left-0 flex items-center pointer-events-none">
-                                <SearchIcon
-                                    className="h-5 w-5"
-                                    aria-hidden="true"
-                                />
+              {user.employees_items?.map((item, i) => {
+                return (
+                  <option key={i} value={item.company_uuid}>
+                    {item.company_title}
+                  </option>
+                );
+              })}
+            </select>
+          ) : null}
+          {user ? (
+            asPath == "/dashboard" ? (
+              <div
+                className="bg-[#F0F0F0] ml-4 rounded-md
+                cursor-pointer flex justify-center 
+                items-center"
+              >
+                <div
+                  onClick={openDrop}
+                  className="w-42 h-9 rounded-md bg-[#F0F0F0] relative shadow flex justify-center items-center"
+                >
+                  <div className="relative w-full py-3 transform transition">
+                    <div className="flex w-full justify-center items-center space-x-3 cursor-pointer">
+                      <div className="dark:text-white w-full text-gray-900 ">
+                        <div className="flex w-full items-center">
+                          <div className="cursor-pointer flex w-full">
+                            <div className="w-full px-3 flex items-center">
+                              {user.first_name} {user.last_name}
+                              <AccountCircleIcon className="text-[#666666] mr-1" />
                             </div>
-                            <input
-                                id="search-field"
-                                className="block w-full h-full pl-8 pr-3 py-2 border-transparent text-gray-900 placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-0 focus:border-transparent sm:text-sm"
-                                placeholder="جستجو"
-                                type="search"
-                                name="search"
-                            />
+                          </div>
+                          <div className="flex px-1 text-[#666666]">
+                            <KeyboardArrowDownIcon />
+                          </div>
                         </div>
-                    </form> */}
+                      </div>
+                    </div>
+                    {opened && (
+                      <div className="absolute w-full rounded-md border-t-2 border-gray-200 px-2 py-3 bg-[#F0F0F0] shadow mt-">
+                        <ul className="space-y-2">
+                          <li className="font-medium">
+                            <a
+                              href={`/users/profile`}
+                              className="flex items-center transform hover:border-[#22aa5b] transition-colors duration-200 border-r-4 border-transparent"
+                            >
+                              <div className="mr-3 p-1">
+                                <AccountCircleIcon className="text-[#666666]" />
+                              </div>
+                              پروفایل
+                            </a>
+                          </li>
+                          <li className="font-medium">
+                            <a
+                              onClick={logoutHandler}
+                              className="flex items-center transform transition-colors duration-200
+                              border-r-4 border-transparent 
+                            hover:border-[#22aa5b]"
+                            >
+                              <div className="mr-3 p-1">
+                                <ExitToAppIcon className="text-[#666666]" />
+                              </div>
+                              خروج
+                            </a>
+                          </li>
+                        </ul>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div className="ml-1 flex items-center md:ml-3 ">
-                    {user ?
-                        asPath == "/dashboard" ? (
-                            <p className="text-sm ml-3 text-gray-500">
-                                {`${user.first_name}  ${user.last_name}`} عزیز
-                                خوش آمدی!
-                            </p>
-                        ) :
-                            <p className="text-sm ml-3 text-gray-500">
-                                {`${user.first_name} ${user.last_name} `}
-                            </p>
-                        : null}
-                    {user ?
-                        <select
-                            value={user.company_uuid}
-                            onChange={(company) => {
-                                setCurrentCompany(
-                                    company.currentTarget.value
-                                );
-                            }}
-                            className="pr-10 relative items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
-                        >
-                            {user.employees_items.map(
-                                (item, i) => {
-                                    return (
+              </div>
+            ) : (
+              <p className="text-sm ml-3 text-gray-500">
+                {`${user.first_name} ${user.last_name} `}
+              </p>
+            )
+          ) : null}
 
-                                        <option
-                                            key={i}
-                                            value={item.company_uuid}
-                                        >
-                                            {item.company_title}
-                                        </option>
-                                    );
-                                }
-                            )}
-                        </select>
-                        : null}
-                    {user ? (
-                        <>
-                            <Link href={`/users/profile`}>
-                                <button
-                                    type="button"
-                                    className="bg-white p-1 ml-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-600"
-                                >
-                                    {user.avatar && user.avatar != "null" ?
-                                    <div className="h-6 w-6">
-                                        <Image
-                                            
-                                            
-                                            loader={
-                                                myLoader
-                                            }
-                                            src={user.avatar}
-                                            alt="عکس پرسنلی"
-                                            width={25}
-                                            height={25}
-                                            style={{
-                                                borderRadius: "50%",
-                                                background: "gray",
-                                                display: "block"
-                                            }}
-                                        /></div>
-                                        :
-                                        <UserCircleIcon
-                                            className="h-6 w-6"
-                                            aria-hidden="true"
-                                        />}
-                                </button>
-                            </Link>
-                        </>
-                    ) : (
-                        ""
-                    )}
+          {/* {user ? (
+            <>
+              <Link href={`/users/changePassword`}>
+                <button
+                  type="button"
+                  className="bg-white p-1 ml-1 rounded-full text-gray-400
+                hover:text-gray-500 focus:outline-none focus:ring-2 
+                  focus:ring-offset-2 focus:ring-amber-600"
+                >
+                  <KeyIcon className="h-6 w-6" aria-hidden="true" />
+                </button>
+              </Link>
+            </>
+          ) : (
+            ""
+          )} */}
 
-                    {user ? (
-                        <>
-                            <Link href={`/users/changePassword`}>
-                                <button
-                                    type="button"
-                                    className="bg-white p-1 ml-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-600"
-                                >
-                                    <KeyIcon
-                                        className="h-6 w-6"
-                                        aria-hidden="true"
-                                    />
-                                </button>
-                            </Link>
-                        </>
-                    ) : (
-                        ""
-                    )}
-
-                    <button
-                        onClick={logoutHandler}
-                        type="button"
-                        className="bg-white p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-600"
-                    >
-                        <LogoutIcon className="h-6 w-6" aria-hidden="true" />
-                    </button>
-
-                    {/* 
-          <Menu as="div" className="ml-3 relative">
-            <div>
-              <Menu.Button className="max-w-xs bg-white flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500">
-                <span className="sr-only">Open user menu</span>
-                <img
-                  className="h-8 w-8 rounded-full"
-                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                  alt=""
-                />
-              </Menu.Button>
-            </div>
-            <Transition
-              as={Fragment}
-              enter="transition ease-out duration-100"
-              enterFrom="transform opacity-0 scale-95"
-              enterTo="transform opacity-100 scale-100"
-              leave="transition ease-in duration-75"
-              leaveFrom="transform opacity-100 scale-100"
-              leaveTo="transform opacity-0 scale-95"
-            >
-              <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
-                {userNavigation.map((item) => (
-                  <Menu.Item key={item.name}>
-                    {({ active }) => (
-                      <a
-                        href={item.href}
-                        className={classNames(
-                          active ? 'bg-gray-100' : '',
-                          'block px-4 py-2 text-sm text-gray-700'
-                        )}
-                      >
-                        {item.name}
-                      </a>
-                    )}
-                  </Menu.Item>
-                ))}
-              </Menu.Items>
-            </Transition>
-          </Menu> */}
-                </div>
-            </div>
+          {/* <button
+            onClick={logoutHandler}
+            type="button"
+            className="bg-white p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-600"
+          >
+            <LogoutIcon className="h-6 w-6" aria-hidden="true" />
+          </button> */}
         </div>
-    );
+      </div>
+    </div>
+  );
 }
 
 export default StickyHeader;

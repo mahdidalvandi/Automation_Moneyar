@@ -2,22 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
-
 @font-face {
   font-family: iransans;
-  src: url('../public/fonts/IRANSans.ttf');
+  src: url("../public/fonts/IRANSans.ttf");
   font-weight: 400;
 }
 
-
 @font-face {
   font-family: iransans;
-  src: url('../public/fonts/IRANSans(FaNum)_Bold.ttf');
+  src: url("../public/fonts/IRANSans(FaNum)_Bold.ttf");
   font-weight: 700;
 }
 
 @layer base {
-
   input[type="number"]::-webkit-inner-spin-button,
   input[type="number"]::-webkit-outer-spin-button {
     -webkit-appearance: none;
@@ -28,13 +25,11 @@
 body {
   font-family: iransans !important;
   font-weight: 400;
-
 }
 
 * {
   font-family: iransans !important;
 }
-
 
 .Table__itemCount {
   /* margin-top: 10px; */
@@ -77,8 +72,10 @@ body {
   opacity: 1;
 }
 
-.MuiAutocomplete-hasPopupIcon.css-16awh2u-MuiAutocomplete-root .MuiAutocomplete-inputRoot,
-.MuiAutocomplete-hasClearIcon.css-16awh2u-MuiAutocomplete-root .MuiAutocomplete-inputRoot {
+.MuiAutocomplete-hasPopupIcon.css-16awh2u-MuiAutocomplete-root
+  .MuiAutocomplete-inputRoot,
+.MuiAutocomplete-hasClearIcon.css-16awh2u-MuiAutocomplete-root
+  .MuiAutocomplete-inputRoot {
   border: 0;
 }
 
@@ -101,14 +98,9 @@ body {
   height: 27px;
 }
 
-
-
-
 html {
   height: 100%;
 }
-
-
 
 .forbiddentext-wrapper {
   height: 100vh;
@@ -120,13 +112,11 @@ html {
   justify-content: center;
 }
 
-
 .forbiddensubtitle {
   font-size: 20px;
   font-weight: 500;
   color: #facf5a;
 }
-
 
 .forbidenbuttons {
   margin: 30px;
@@ -160,7 +150,6 @@ html {
 
 .p-organizationchart .p-organizationchart-line-down {
   background: black !important;
-
 }
 
 .p-organizationchart-line-top {

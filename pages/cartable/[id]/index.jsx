@@ -36,7 +36,7 @@ export default function ViewEmail() {
 
 
     const handleChange = (panel) => (event, isExpanded) => {
-        if(expanded){
+        if (expanded) {
             setLoadTree(true);
         }
         setExpanded(isExpanded ? panel : false);
@@ -49,7 +49,7 @@ export default function ViewEmail() {
         }
     }, [router.isReady]);
 
-    
+
     function draftRejection() {
         var object = {};
         if (!rejectDescription) {
@@ -96,9 +96,8 @@ export default function ViewEmail() {
                 <main>
                     {Object.keys(letterData).length > 0
                         ? letterData.map((letter, i) =>
-                            letterData[i].type != 0 ? (
+                            letterData[i].type != 0 ? (                                
                                 <Accordion className="!m-0">
-
                                     <AccordionSummary
                                         aria-controls={
                                             "panel" +
@@ -118,11 +117,13 @@ export default function ViewEmail() {
                                             />
                                         }
                                     >
+                                        
                                         <h3 className="text-md text-white">
                                             {letterData[i].subject}
                                         </h3>
                                     </AccordionSummary>
                                     <AccordionDetails className="bg-gray-200">
+                                        
                                         <MailDetails
                                             subject={letterData[i].subject}
                                             author={letterData[i].author}
@@ -154,6 +155,9 @@ export default function ViewEmail() {
                                             }
                                             regarding={letterData[i].regarding_info}
                                             isMailRoomIssued={letterData[i].is_mailroom_issued}
+                                            pdfUUID={letterData[i].pdf_uuid}
+                                            updateStatus={letterData[i].edit_status}
+                                            letterUUID={letterData[i].letter_uuid}
                                             isMailRoom={letterData[i].is_mailroom}
                                             issuedSubject={letterData[i].subject}
                                             issuedRecivers={letterData[i].to_company}
@@ -161,7 +165,7 @@ export default function ViewEmail() {
                                             uuid={letterData[i].uuid}
                                             type={letterData[i].type}
                                             status={letterData[i].my_status}
-                                            according= {true}
+                                            according={true}
                                         />
                                     </AccordionDetails>
                                 </Accordion>
@@ -197,6 +201,9 @@ export default function ViewEmail() {
                                     regarding={letterData[i].regarding_info}
                                     letterNo={letterData[i].letter_no}
                                     isMailRoomIssued={letterData[i].is_mailroom_issued}
+                                    pdfUUID={letterData[i].pdf_uuid}
+                                    letterUUID={letterData[i].letter_uuid}
+                                    updateStatus={letterData[i].edit_status}
                                     isMailRoom={letterData[i].is_mailroom}
                                     issuedSubject={letterData[i].subject}
                                     issuedRecivers={letterData[i].to_company}
@@ -205,7 +212,7 @@ export default function ViewEmail() {
                                     type={letterData[i].type}
                                     status={letterData[i].my_status}
                                     originalUuid={router.query.id}
-                                    according= {false}
+                                    according={false}
                                 />
                             ) : (
                                 ""
@@ -213,26 +220,26 @@ export default function ViewEmail() {
                         )
                         : ""}
                 </main>
-                
+
             </div>
 
             <div className="pt-2 pb-2 px-10 border-t border-gray-200">
 
-                <div className="flex justify-end">                    
+                <div className="flex justify-end">
                     {user.id != letterData.author_id ? (
                         <>
-                        {letterData.length > 0 && letterData[Object.keys(letterData).length - 1].is_mailroom_issued ?
+                            {letterData.length > 0 && letterData[Object.keys(letterData).length - 1].is_mailroom_issued ?
                                 null
                                 :
                                 letterData.letter_no ? null :
-                            <Link href={`${router.query.id}/forward`}>
-                                <button
-                                    type="button"
-                                    className="inline-flex justify-center py-2 px-4 ml-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-amber-500 hover:bg-amber-600 "
-                                >
-                                    <span>ارجاع نامه</span>
-                                </button>
-                            </Link>}
+                                    <Link href={`${router.query.id}/forward`}>
+                                        <button
+                                            type="button"
+                                            className="inline-flex justify-center py-2 px-4 ml-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-amber-500 hover:bg-amber-600 "
+                                        >
+                                            <span>ارجاع نامه</span>
+                                        </button>
+                                    </Link>}
                             {letterData.length > 0 && letterData[Object.keys(letterData).length - 1].is_mailroom_issued ?
                                 null
                                 :

@@ -1,17 +1,14 @@
 import { PencilIcon } from "@heroicons/react/outline";
 
 export default function Edit(props) {
-    const { color, text, style, link, uuid } = props;
-    const handleClick = (link, uuid) => {
-        window.location.assign(link + uuid);
-    };
-    return (
-        <button onClick={(e) => handleClick(link, uuid)} className="mr-2">
-            <PencilIcon
-                className="h-5 w-5"
-                aria-hidden="true"
-            ></PencilIcon>
-            {/* <svg
+  const { color, text, style, link, uuid } = props;
+  const handleClick = (link, uuid) => {
+    window.location.assign(link + uuid);
+  };
+  return (
+    <button onClick={(e) => handleClick(link, uuid)} className="mr-2">
+      <PencilIcon className="h-5 w-5" aria-hidden="true"></PencilIcon>
+      {/* <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6"
                 fill="none"
@@ -25,6 +22,6 @@ export default function Edit(props) {
                     d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
                 />
             </svg> */}
-        </button >
-    );
+    </button>
+  );
 }

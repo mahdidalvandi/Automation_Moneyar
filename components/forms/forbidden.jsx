@@ -1,15 +1,17 @@
+import Link from "next/link";
+
 export default function Forbidden() {
+  return (
+    <div className="forbiddentext-wrapper">
+      <div className="forbiddensubtitle">
+        شما دسترسی به محتوای مورد نظر را ندارید
+      </div>
 
-
-    return (
-        <div class="forbiddentext-wrapper">
-        <div class="forbiddensubtitle">
-            شما دسترسی به محتوای مورد نظر را ندارید
-        </div>
-    
-        <div class="forbidenbuttons">
-            <a class="button" href="/dashboard">بازگشت به خانه</a>
-        </div>
+      <div className="forbidenbuttons">
+        <Link className="button" href="/dashboard">
+          بازگشت به خانه
+        </Link>
+      </div>
     </div>
-    );
+  );
 }

@@ -2,17 +2,15 @@ import SidebarDesktop from "../../components/layout/sidebarDesktop";
 import SidebarMobile from "../../components/layout/sidebarMobile";
 import StickyHeader from "../../components/layout/stickyHeader";
 import UsersTable from "../../components/table/usersTable";
-import Link from 'next/link'
+import Link from "next/link";
 import axios from "../../lib/axios";
 import navigationList from "../../components/layout/navigationList";
 import Forbidden from "../../components/forms/forbidden";
-import { useRouter } from 'next/router';
+import { useRouter } from "next/router";
 import { useState, useRef, useEffect, SetStateAction } from "react";
 
-import {
-  PlusIcon,
-  SearchIcon,
-} from "@heroicons/react/outline";
+import { PlusIcon, SearchIcon } from "@heroicons/react/outline";
+import Image from "next/image";
 
 export default function Dashboard() {
   const { asPath } = useRouter();
@@ -30,7 +28,6 @@ export default function Dashboard() {
         setData(response.data.data);
         setLoadingData(false);
       });
-
     }
     if (loadingData) {
       getData();
@@ -38,16 +35,18 @@ export default function Dashboard() {
   }, []);
   function search(val) {
     if (data) {
-      var metingBuf = []
+      var metingBuf = [];
       if (val.length > 2) {
         setSearchHasValue(true);
         for (let i = 0; i < data.length; i++) {
-          if (data[i].first_name.includes(val) || data[i].last_name.includes(val)) {
-            metingBuf = [...metingBuf, data[i]]
+          if (
+            data[i].first_name.includes(val) ||
+            data[i].last_name.includes(val)
+          ) {
+            metingBuf = [...metingBuf, data[i]];
           }
         }
-      }
-      else setSearchHasValue(false);
+      } else setSearchHasValue(false);
       setSearchData(metingBuf);
     }
   }
@@ -62,51 +61,66 @@ export default function Dashboard() {
   return (
     <div>
       <SidebarMobile menu={navigationList()} loc={asPath} />
-      <SidebarDesktop menu={navigationList()} loc={asPath}
+      <SidebarDesktop
+        menu={navigationList()}
+        loc={asPath}
         setSelect={(props) => setCurrentUserRole(props.currentUserRole)}
         setActions={(props) => setCurrentUserActions(props.currentUserActions)}
-        setIsHolding={(props) => { }}
-        setSuperUser={(props) => { }} />
+        setIsHolding={(props) => {}}
+        setSuperUser={(props) => {}}
+      />
       <div className="md:pr-52 flex flex-col flex-1">
         <StickyHeader />
-        {!currentUserActions ? null : CheckIfAccessToPage(window.location.pathname) ?
+        {!currentUserActions ? null : CheckIfAccessToPage(
+            window.location.pathname
+          ) ? (
           <main>
             <div className="py-6">
               <div className="max-w-8xl mx-auto px-4 sm:px-6 md:px-8">
                 <div className="bg-white px-4 py-5 border-b border-gray-200 sm:px-6">
                   <div className="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-nowrap">
                     <div className="ml-4 mt-2">
-                      <h2 className="text-lg leading-6 font-large text-gray-900">کاربران</h2>
+                      <h2 className="text-lg leading-6 font-large text-gray-900">
+                        کاربران
+                      </h2>
                     </div>
 
                     <div className="ml-4 mt-2 flex-shrink-0">
                       {/* <Button text="افزودن کاربر جدید" color="emerald" /> */}
-                      {CheckIfAccess("add_user") ?
+                      {CheckIfAccess("add_user") ? (
                         <Link href="/users/addInformation">
                           <button
                             type="button"
-                            className="relative inline-flex items-center px-4 py-2  shadow-sm text-sm font-medium rounded-md text-white bg-[#1f2937] hover:bg-[#11151b] "
+                            className="relative mr-2 inline-flex items-center px-4 py-2  shadow-sm text-sm font-medium rounded-md border  text-[#22AA5B] border-[#22AA5B] hover:bg-[#dcffea] "
                           >
-                            <PlusIcon
-                              className="ml-2 h-5 w-5 text-white"
-                              aria-hidden="true"
+                            <span className="px-2 font-semibold">
+                              ثبت کاربر جدید
+                            </span>
+                            <Image
+                              src="/images/useradd.png"
+                              height={17}
+                              width={17}
                             />
-                            <span>ثبت کاربر جدید</span>
                           </button>
-                        </Link> : null}
-                        {CheckIfAccess("add_user") ?
+                        </Link>
+                      ) : null}
+                      {CheckIfAccess("add_user") ? (
                         <Link href="/users/addBatchInformation">
                           <button
                             type="button"
-                            className="relative mr-2 inline-flex items-center px-4 py-2  shadow-sm text-sm font-medium rounded-md text-white bg-[#1f2937] hover:bg-[#11151b] "
+                            className="relative mr-2 inline-flex items-center px-4 py-2  shadow-sm text-sm font-medium rounded-md border  text-[#22AA5B] border-[#22AA5B] hover:bg-[#dcffea] "
                           >
-                            <PlusIcon
-                              className="ml-2 h-5 w-5 پ text-white"
-                              aria-hidden="true"
+                            <span className="px-2 font-semibold">
+                              ثبت کاربر گروهی
+                            </span>
+                            <Image
+                              src="/images/userg.png"
+                              height={15}
+                              width={18}
                             />
-                            <span>ثبت گروهی کاربر </span>
                           </button>
-                        </Link> : null}
+                        </Link>
+                      ) : null}
                     </div>
                   </div>
                 </div>
@@ -119,7 +133,7 @@ export default function Dashboard() {
                     <label htmlFor="search-field" className="sr-only">
                       جستجو
                     </label>
-                    <div className="relative w-full text-gray-400  focus-within:text-gray-600">
+                    <div className="relative w-1/4 text-gray-400  focus-within:text-gray-600">
                       <div className="absolute inset-y-0 left-0 flex items-center pointer-events-none">
                         <SearchIcon
                           className="h-5 w-5 ml-2"
@@ -133,7 +147,7 @@ export default function Dashboard() {
                         }}
                         id="search-field"
                         className="block w-full h-full pl-8 pr-3 py-2border border-gray-300 rounded-md shadow-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-0 focus:border-gray-300 sm:text-sm"
-                        placeholder="جستجو نام کاربر"
+                        placeholder="جستجوی نام کاربر"
                         type="text"
                         name="search"
                       />
@@ -142,11 +156,19 @@ export default function Dashboard() {
                 </div>
               </div>
               <div className="w-full px-4 sm:px-6 md:px-8">
-                {currentUserRole ?
-                  <UsersTable loadingData={false} data={searchHasValue ? searchData : data} roleData={currentUserRole} /> : null}
+                {currentUserRole ? (
+                  <UsersTable
+                    loadingData={false}
+                    data={searchHasValue ? searchData : data}
+                    roleData={currentUserRole}
+                  />
+                ) : null}
               </div>
             </div>
-          </main> : <Forbidden />}
+          </main>
+        ) : (
+          <Forbidden />
+        )}
       </div>
     </div>
   );

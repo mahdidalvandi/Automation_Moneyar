@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { useRouter } from "next/router";
 import { useAuth } from "../../../../hooks/auth";
 import React, { useState, useRef, useEffect, useCallback } from "react";
@@ -12,6 +11,7 @@ import { loadImageFromServer } from "../../../../lib/helper";
 const myLoader = ({ src, width, quality }) => {
     return loadImageFromServer(`${src}?w=${width}&q=${quality || 75}`);
 };
+
 export default function OrganizationalChart() {
     let componentRef = useRef();
     const ref = React.useRef(null);
@@ -20,9 +20,8 @@ export default function OrganizationalChart() {
     const [width, setWidth] = useState(0);
     const onButtonClick = useCallback(() => {
         if (ref.current === null) {
-            return
+            return 
         }
-
         toPng(ref.current, { cacheBust: true,backgroundColor:'white' })
             .then((dataUrl) => {
                 const link = document.createElement('a')
@@ -82,11 +81,11 @@ export default function OrganizationalChart() {
     return (
         <main style={{ direction: "ltr" }} className="py-1 space-y-6 md:pr-52 " ref={(el) => (componentRef = el)}>            
             <div className="card overflow-x-auto" style={{
-                width: `${width}px`,
-                height: `${height}px`
+                    width: `${width}px`,
+                    height: `${height}px`
             }} ref={ref}>
                 {chart ? <OrganizationChart value={chart} nodeTemplate={nodeTemplate} /> : null}
-            </div>
+          </div>
         </main>
     );
 }

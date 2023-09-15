@@ -1,22 +1,22 @@
-import SidebarDesktop from "../../../components/layout/sidebarDesktop";
-import SidebarMobile from "../../../components/layout/sidebarMobile";
-import StickyHeader from "../../../components/layout/stickyHeader";
-import Textarea from "../../../components/forms/textarea";
-import navigationList from "../../../components/layout/navigationList";
+import SidebarDesktop from "../../../../components/layout/sidebarDesktop";
+import SidebarMobile from "../../../../components/layout/sidebarMobile";
+import StickyHeader from "../../../../components/layout/stickyHeader";
+import Textarea from "../../../../components/forms/textarea";
+import navigationList from "../../../../components/layout/navigationList";
 import { useState, useRef, useEffect } from "react";
 import { PlusIcon, XIcon } from "@heroicons/react/solid";
 import { Editor } from "@tinymce/tinymce-react";
-import { useAuth } from "../../../hooks/auth";
+import { useAuth } from "../../../../hooks/auth";
 import fileDownload from "js-file-download";
-import axios from "../../../lib/axios";
+import axios from "../../../../lib/axios";
 import { useRouter } from "next/router";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
-import RecieversDialog from "../../../components/forms/recieversDialog";
-import CopiesDialog from "../../../components/forms/recieversDialog";
-import MailsDialog from "../../../components/forms/mailsDialog";
-import Forbidden from "../../../components/forms/forbidden";
-import InputBox from "../../../components/forms/inputBox";
+import RecieversDialog from "../../../../components/forms/recieversDialog";
+import CopiesDialog from "../../../../components/forms/recieversDialog";
+import MailsDialog from "../../../../components/forms/mailsDialog";
+import Forbidden from "../../../../components/forms/forbidden";
+import InputBox from "../../../../components/forms/inputBox";
 import Link from "next/link";
 import LinearProgress from "@mui/material/LinearProgress";
 import { Close } from "@material-ui/icons";
@@ -33,16 +33,11 @@ const typeMethods = [
   { id: "1", title: "صادره" },
 ];
 
-const letterTypeMethods = [
-  { id: "0", title: "A4 با سربرگ" },
-  { id: "1", title: "A4 بدون سربرگ" },
-  { id: "2", title: "A5 با سربرگ" },
-  { id: "3", title: "A5 بدون سربرگ" },
-];
-
 export default function NewEmail() {
-  const { asPath } = useRouter();
   const router = useRouter();
+  const { id } = router.query;
+  const [letterUUID, setLetterUUID] = useState(id);
+  const { asPath } = useRouter();
 
   const { user, isLoading } = useAuth({
     middleware: "auth",
@@ -63,7 +58,6 @@ export default function NewEmail() {
   const [mailSubject, setMailSubject] = useState();
   const [mailSender, setMailSender] = useState();
   const [description, setDescription] = useState("");
-  const [mailRoomUUID, setMailRoomUUID] = useState();
 
   const [errors, setErrors] = useState([]);
   const [recipient, setRecipient] = useState([]);
@@ -90,12 +84,46 @@ export default function NewEmail() {
   const [previewDialogOpen, setPreviewDialogOpen] = useState(false);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [letterType, setLetterType] = useState("0");
-  const [letterUUID, setLetterUUID] = useState();
   const [pdfUUID, setPdfUUID] = useState();
   const [pdfLetter, setPdfLetter] = useState();
-  const [creatingDraft, setCreatingDraft] = useState(false);
+  const [pdfLoading, setPdfLoading] = useState(false);
+  const [issuedData, setIssuedData] = useState([]);
   const [gettingUpdates, setGettingUpdates] = useState(false);
   const [editStatus, setEditStatus] = useState(false);
+
+  useEffect(
+    (_) => {
+      if (router.isReady) {
+        axios
+          .get(`/api/v1/mailroom/issued/edit/uuid`, {
+            params: {
+              uuid: router.query.id,
+            },
+          })
+          .then((res) => {
+            setIssuedData(res.data.data);
+            setMailSubject(res.data.data.subject);
+            setMailSender(res.data.data.to_company);
+            setPdfUUID(res.data.data.pdf_uuid);
+            setLetterUUID(res.data.data.letter_uuid);
+            setEditStatus(res.data.data.edit_status);
+            setIsIssuedLoading(false);
+          })
+          .catch((error) => {});
+      }
+    },
+    [router.isReady]
+  );
+
+  useEffect(
+    (_) => {
+      if (pdfUUID && !pdfLoading) {
+        setPdfLoading(true);
+        ShowPreviewPdf(pdfUUID, "pdf");
+      }
+    },
+    [pdfUUID]
+  );
 
   const DownloadFile = () => {
     axios
@@ -287,7 +315,6 @@ export default function NewEmail() {
       setSendingForm(false);
       return;
     }
-    mailFormData.append("uuid", mailRoomUUID);
     mailFormData.append("type", "1");
     mailFormData.append("subject", mailSubject);
     mailFormData.append("to_company", mailSender);
@@ -295,17 +322,15 @@ export default function NewEmail() {
       "recipient",
       recipient != "" ? recipient.map(({ id }) => id) : ""
     );
-    // mailFormData.append(
-    //     "body",
-    //     editorRef.current.getContent() != null
-    //         ? editorRef.current.getContent()
-    //         : ""
-    // );
-    mailFormData.append("regarding", regarding.indic);
-    mailFormData.append("description", description);
+    mailFormData.append(
+      "body",
+      editorRef.current.getContent() != null
+        ? editorRef.current.getContent()
+        : ""
+    );
+    mailFormData.append("regarding", regarding.indic),
+      mailFormData.append("description", description);
     mailFormData.append("attachments", attachements);
-    mailFormData.append("letter_uuid", letterUUID);
-    mailFormData.append("pdf_uuid", pdfUUID);
 
     try {
       const response = await axios({
@@ -370,15 +395,15 @@ export default function NewEmail() {
       .then((res) => {
         var object = {};
         setErrors(object);
-        setGettingUpdates(false);
         setEditStatus(false);
+        setGettingUpdates(false);
         ShowPreviewPdf(res.data.data.pdf_path, "pdf");
       })
       .catch((error) => {
-        setGettingUpdates(false);
         var object = {};
         object["doc"] = error.response.data.message;
         setErrors(object);
+        setGettingUpdates(false);
       });
   };
 
@@ -404,80 +429,6 @@ export default function NewEmail() {
       });
   };
 
-  const openDocFileAndSaveChanges = (event) => {
-    event.preventDefault();
-
-    var hasError = false;
-    var object = {};
-    if (!mailSender) {
-      object["mail_Sender"] = "گیرنده نامه الزامی است";
-      hasError = true;
-    }
-    if (!mailSubject) {
-      object["mailSubject"] = "موضوع نامه الزامی است";
-      hasError = true;
-    }
-    if (hasError) {
-      setErrors(object);
-      setSendingForm(false);
-      return;
-    }
-    setErrors(object);
-    setCreatingDraft(true);
-    // Make a GET request to the server to fetch the file
-    axios
-      .post("/api/v1/mailroom/issued/addDraft", {
-        type: letterType,
-        subject: mailSubject,
-        to_company: mailSender,
-      })
-      .then((res) => {
-        setMailRoomUUID(res.data.data.uuid);
-        setLetterUUID(res.data.data.file_path);
-        setPdfUUID(res.data.data.pdf_path);
-        ShowPreviewPdf(res.data.data.pdf_path, "pdf");
-        setEditStatus(res.data.data.edit_status);
-        return res.data.data.file_uuid;
-      })
-      .then((string) => {
-        const url = `https://webdav.moneyar.com/${string}`;
-        window.open(`ms-word:ofe|u|${url}`, "_blank");
-        // Wait for the document to finish loading
-        // const intervalId = setInterval(() => {
-        //     const doc = window.ActiveXObject ? window.ActiveXObject('Word.Application') : window.document.getElementById('OfficeFrame').contentWindow;
-        //     if (doc) {
-        //         clearInterval(intervalId);
-        //         // Enable the "Track Changes" feature
-        //         doc.Application.Options.TrackRevisions = true;
-        //         // Wait for the user to save the document
-        //         const saveIntervalId = setInterval(() => {
-        //             if (doc.Application.ActiveDocument.Saved) {
-        //                 clearInterval(saveIntervalId);
-        //                 // Save the changes back to the server-side file
-        //                 const fileContent = doc.Application.ActiveDocument.Content.XML;
-        //                 const requestOptions = {
-        //                     method: 'PUT',
-        //                     headers: {
-        //                         'Content-Type': 'application/vnd.ms-word'
-        //                     },
-        //                     body: fileContent
-        //                 };
-        //                 fetch(fileUrl, requestOptions)
-        //                     .then(response => {
-        //                     })
-        //                     .catch(error => {
-        //                         console.error('Error:', error);
-        //                     });
-        //             }
-        //         }, 1000);
-        //     }
-        // }, 1000);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  };
-
   // {mailIndicator && !receiptOpen ? setReceiptOpen(true) : null}
   return (
     <div>
@@ -493,16 +444,14 @@ export default function NewEmail() {
       <div className="md:pr-52 flex flex-col flex-1">
         <StickyHeader />
         {!currentUserActions ? null : CheckIfAccessToPage(
-            window.location.pathname
+            "/mailRoom/issued/edit"
           ) ? (
           <main>
             <div className="py-6">
               <div className="max-w-full mx-auto px-4 sm:px-6 md:px-8">
                 <div className="border-b border-gray-200">
                   <div className="sm:flex sm:items-baseline">
-                    <h3 className="text-lg text-gray-900">
-                      ایجاد پیش‌نویس جدید
-                    </h3>
+                    <h3 className="text-lg text-gray-900">ویرایش پیشنویس</h3>
                   </div>
                 </div>
                 {/* <label
@@ -530,6 +479,8 @@ export default function NewEmail() {
                     <div>
                       <div className="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
                         <div className="sm:col-span-5">
+                          {" "}
+                          {/*typeMethod */}
                           <p
                             htmlFor="cover-photo"
                             className="block text-sm font-medium text-gray-700"
@@ -549,7 +500,7 @@ export default function NewEmail() {
                                   >
                                     <input
                                       id={typeMethods.id}
-                                      name="LetterTypeMethod"
+                                      name="confidentialityMethod"
                                       type="radio"
                                       disabled="true"
                                       defaultChecked={typeMethods.id === "1"}
@@ -596,65 +547,11 @@ export default function NewEmail() {
                             isrequired="true"
                           />
                         </div>
-                        {!pdfLetter ? (
-                          <div className="sm:col-span-5 flex justify-start">
-                            {" "}
-                            {/*typeMethod */}
-                            <p
-                              htmlFor="cover-photo"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              نوع نامه *
-                            </p>
-                            <fieldset className="mt-8">
-                              <div className="flex justify-between space-x-4">
-                                {letterTypeMethods.map((letterTypeMethods) => (
-                                  <div
-                                    key={letterTypeMethods.id}
-                                    className="flex items-center"
-                                  >
-                                    <label
-                                      htmlFor={letterTypeMethods.id}
-                                      className="ml-3 block text-sm font-medium text-gray-700"
-                                    >
-                                      <input
-                                        id={letterTypeMethods.id}
-                                        name="confidentialityMethod"
-                                        type="radio"
-                                        defaultChecked={
-                                          letterTypeMethods.id === "0"
-                                        }
-                                        className="focus:ring-amber-500 h-4 w-4 text-amber-600 border-gray-300 ml-2"
-                                        onChange={(e) => {
-                                          setLetterType(e.target.id);
-                                        }}
-                                      />
-                                      {letterTypeMethods.title}
-                                    </label>
-                                  </div>
-                                ))}
-                              </div>
-                            </fieldset>
-                            <button
-                              onClick={openDocFileAndSaveChanges}
-                              disabled={creatingDraft}
-                              className={`${
-                                creatingDraft
-                                  ? " bg-gray-500 hover:bg-gray-500 "
-                                  : " bg-[#43a047] hover:bg-[#2d592f] "
-                              } ml-2 text-white px-2 py-2 mt-5 rounded-md text-sm inline-block`}
-                            >
-                              {!creatingDraft
-                                ? "ساخت پیش‌نویس"
-                                : "در حال ساخت پیش‌نویس"}
-                            </button>
-                          </div>
-                        ) : null}
-                        {pdfLetter ? (
-                          <>
-                            <div className="sm:col-span-6">
-                              <div>
-                                <div className="flex justify-between">
+                        <div className="sm:col-span-6">
+                          {pdfLetter ? (
+                            <div>
+                              <div className="flex justify-between">
+                                <div className="flex justify-end mb-3">
                                   <div className="flex justify-end mb-3">
                                     {editStatus ? (
                                       <button
@@ -679,27 +576,29 @@ export default function NewEmail() {
                                       </button>
                                     )}
                                   </div>
-                                  {errors["doc"] ? (
-                                    <span className="text-md mt-6 text-red-500">
-                                      {errors["doc"]}
-                                    </span>
-                                  ) : (
-                                    <span className="text-md mt-6 text-red-500"></span>
-                                  )}
                                 </div>
-                                <div
-                                  className="embed-responsive"
-                                  style={{ height: "100vh" }}
-                                >
-                                  <embed
-                                    src={pdfLetter}
-                                    type="application/pdf"
-                                    width="100%"
-                                    height="100%"
-                                  />
-                                </div>
+                                {errors["doc"] ? (
+                                  <span className="text-md mt-6 text-red-500">
+                                    {errors["doc"]}
+                                  </span>
+                                ) : (
+                                  <span className="text-md mt-6 text-red-500"></span>
+                                )}
                               </div>
-                              {/* <label
+                              <div
+                                className="embed-responsive"
+                                style={{ height: "100vh" }}
+                              >
+                                <embed
+                                  src={pdfLetter}
+                                  type="application/pdf"
+                                  width="100%"
+                                  height="100%"
+                                />
+                              </div>
+                            </div>
+                          ) : null}
+                          {/* <label
                                                         htmlFor="cover-photo"
                                                         className="block text-sm font-medium text-gray-700"
                                                     >
@@ -722,194 +621,190 @@ export default function NewEmail() {
                                                             {errors["body"]}
                                                         </span>
                                                     ) : null} */}
-                            </div>
-                            <div className="sm:col-span-4">
-                              <label
-                                htmlFor="cover-photo"
-                                className="block text-sm font-medium text-gray-700"
-                              >
-                                عطف به نامه
-                              </label>
-                              {regarding.subj == "" ? (
-                                <button
-                                  onClick={(_) => {
-                                    setMailsDialogVisibility(true);
-                                  }}
-                                  type="button"
-                                  className="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 border border-gray-300 text-sm font-medium  text-gray-700 bg-gray-50 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500"
-                                >
-                                  <PlusIcon
-                                    className="h-5 w-5 text-gray-400"
-                                    aria-hidden="true"
-                                  />
-                                  <span>افزودن نامه از لیست</span>
-                                </button>
-                              ) : (
-                                <p className="mt-4">
-                                  {regarding.subj +
-                                    " (" +
-                                    regarding.indic +
-                                    ")"}
-                                </p>
-                              )}
-                            </div>
-                            <div className="sm:col-span-4">
-                              <label
-                                htmlFor="cover-photo"
-                                className="block text-sm font-medium text-gray-700"
-                              >
-                                افزودن نامه و ضمایم
-                              </label>
-                              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-                                <div className="space-y-1 text-center">
-                                  <svg
-                                    className="mx-auto h-12 w-12 text-gray-400"
-                                    stroke="currentColor"
-                                    fill="none"
-                                    viewBox="0 0 48 48"
-                                    aria-hidden="true"
-                                  >
-                                    <path
-                                      d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                                      strokeWidth={2}
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                    />
-                                  </svg>
-                                  <div className=" text-sm text-gray-600">
-                                    <label
-                                      htmlFor="file-upload"
-                                      className="relative cursor-pointer bg-white rounded-md font-medium text-amber-600 hover:text-amber-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-amber-500"
-                                    >
-                                      <span>آپلود فایل</span>
-                                      <input
-                                        id="file-upload"
-                                        name="file-upload"
-                                        type="file"
-                                        multiple={true}
-                                        className="sr-only"
-                                        onChange={(e) => {
-                                          uploadChange(e);
-                                        }}
-                                      />
-                                    </label>
-                                  </div>
-                                  <p className="text-xs text-gray-500">
-                                    کمتر از ۱۰ مگابایت
-                                  </p>
-                                </div>
-                              </div>
-                              {uploading ? (
-                                <LinearProgress className="mt-2 mr-2" />
-                              ) : null}
-                              {Object.keys(fileNames).length != 0
-                                ? fileNames.map((file, index) => (
-                                    <span
-                                      key={index}
-                                      className="relative z-0 inline-flex shadow-sm rounded-md mt-2 mr-2"
-                                    >
-                                      <button
-                                        type="button"
-                                        onClick={() =>
-                                          ShowPreview(
-                                            attachements[index],
-                                            file,
-                                            attachements[index].name
-                                          )
-                                        }
-                                        className="relative inline-flex items-center px-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500"
-                                      >
-                                        {file}
-                                      </button>
-                                      <button
-                                        onClick={() => deleteFile(file, index)}
-                                        type="button"
-                                        className="-mr-px relative inline-flex items-center px-2 py-1 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500"
-                                      >
-                                        <XIcon
-                                          className="-ml-1 ml-1 h-5 w-5"
-                                          aria-hidden="true"
-                                        />
-                                      </button>
-                                    </span>
-                                  ))
-                                : ""}
-                            </div>
-                            <div className="sm:col-span-6">
-                              {errors["upload"] ? (
-                                <span className="text-sm text-red-500">
-                                  {errors["upload"]}
-                                </span>
-                              ) : null}
-                            </div>
-                            <div className="sm:col-span-6">
-                              {" "}
-                              {/*reciver*/}
-                              <label
-                                htmlFor="cover-photo"
-                                className="block text-sm font-medium text-gray-700"
-                              >
-                                تایید کنندگان نامه *
-                              </label>
-                              <div className="mt-1 flex rounded-md shadow-sm">
-                                <Autocomplete
-                                  multiple
-                                  id="tags-standard"
-                                  className=" iransans relative flex items-stretch flex-grow focus-within:z-10"
-                                  options={filteredPeople}
-                                  noOptionsText="یافت نشد!"
-                                  value={recipient}
-                                  onChange={(event, newValue) => {
-                                    setRecipient(newValue);
-                                  }}
-                                  getOptionLabel={(person) => person.full}
-                                  renderInput={(params) => (
-                                    <TextField
-                                      className="iransans appearance-none block w-full px-3 py-2 border border-gray-300 rounded-r-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm"
-                                      {...params}
-                                      variant="standard"
-                                      placeholder="افزودن .."
-                                      onChange={(event) =>
-                                        setQuery(event.target.value)
-                                      }
-                                    />
-                                  )}
-                                />
-
-                                <button
-                                  onClick={(_) => {
-                                    setRecieversDialogVisibility(true);
-                                  }}
-                                  type="button"
-                                  className="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 border border-gray-300 text-sm font-medium  text-gray-700 bg-gray-50 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500"
-                                >
-                                  <PlusIcon
-                                    className="h-5 w-5 text-gray-400"
-                                    aria-hidden="true"
-                                  />
-                                  <span>گروه دریافت کننده</span>
-                                </button>
-                              </div>
-                              {errors["recipient"] ? (
-                                <span className="text-sm text-red-500">
-                                  {errors["recipient"]}
-                                </span>
-                              ) : null}
-                            </div>
-                            <div className="sm:col-span-6">
-                              <Textarea
-                                title="توضیحات"
-                                name="Description"
-                                onChange={(e) => {
-                                  setDescription(e.target.value);
-                                }}
-                                defaultValue={description}
-                                rows="5"
-                                type="text"
+                        </div>
+                        <div className="sm:col-span-4">
+                          <label
+                            htmlFor="cover-photo"
+                            className="block text-sm font-medium text-gray-700"
+                          >
+                            عطف به نامه
+                          </label>
+                          {regarding.subj == "" ? (
+                            <button
+                              onClick={(_) => {
+                                setMailsDialogVisibility(true);
+                              }}
+                              type="button"
+                              className="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 border border-gray-300 text-sm font-medium  text-gray-700 bg-gray-50 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500"
+                            >
+                              <PlusIcon
+                                className="h-5 w-5 text-gray-400"
+                                aria-hidden="true"
                               />
+                              <span>افزودن نامه از لیست</span>
+                            </button>
+                          ) : (
+                            <p className="mt-4">
+                              {regarding.subj + " (" + regarding.indic + ")"}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="sm:col-span-4">
+                          <label
+                            htmlFor="cover-photo"
+                            className="block text-sm font-medium text-gray-700"
+                          >
+                            افزودن نامه و ضمایم
+                          </label>
+                          <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                            <div className="space-y-1 text-center">
+                              <svg
+                                className="mx-auto h-12 w-12 text-gray-400"
+                                stroke="currentColor"
+                                fill="none"
+                                viewBox="0 0 48 48"
+                                aria-hidden="true"
+                              >
+                                <path
+                                  d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                                  strokeWidth={2}
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                />
+                              </svg>
+                              <div className=" text-sm text-gray-600">
+                                <label
+                                  htmlFor="file-upload"
+                                  className="relative cursor-pointer bg-white rounded-md font-medium text-amber-600 hover:text-amber-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-amber-500"
+                                >
+                                  <span>آپلود فایل</span>
+                                  <input
+                                    id="file-upload"
+                                    name="file-upload"
+                                    type="file"
+                                    multiple={true}
+                                    className="sr-only"
+                                    onChange={(e) => {
+                                      uploadChange(e);
+                                    }}
+                                  />
+                                </label>
+                              </div>
+                              <p className="text-xs text-gray-500">
+                                کمتر از ۱۰ مگابایت
+                              </p>
                             </div>
-                          </>
-                        ) : null}
+                          </div>
+                          {uploading ? (
+                            <LinearProgress className="mt-2 mr-2" />
+                          ) : null}
+                          {Object.keys(fileNames).length != 0
+                            ? fileNames.map((file, index) => (
+                                <span
+                                  key={index}
+                                  className="relative z-0 inline-flex shadow-sm rounded-md mt-2 mr-2"
+                                >
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      ShowPreview(
+                                        attachements[index],
+                                        file,
+                                        attachements[index].name
+                                      )
+                                    }
+                                    className="relative inline-flex items-center px-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500"
+                                  >
+                                    {file}
+                                  </button>
+                                  <button
+                                    onClick={() => deleteFile(file, index)}
+                                    type="button"
+                                    className="-mr-px relative inline-flex items-center px-2 py-1 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500"
+                                  >
+                                    <XIcon
+                                      className="-ml-1 ml-1 h-5 w-5"
+                                      aria-hidden="true"
+                                    />
+                                  </button>
+                                </span>
+                              ))
+                            : ""}
+                        </div>
+                        <div className="sm:col-span-6">
+                          {errors["upload"] ? (
+                            <span className="text-sm text-red-500">
+                              {errors["upload"]}
+                            </span>
+                          ) : null}
+                        </div>
+                        <div className="sm:col-span-6">
+                          {" "}
+                          {/*reciver*/}
+                          <label
+                            htmlFor="cover-photo"
+                            className="block text-sm font-medium text-gray-700"
+                          >
+                            تایید کنندگان نامه *
+                          </label>
+                          <div className="mt-1 flex rounded-md shadow-sm">
+                            <Autocomplete
+                              multiple
+                              id="tags-standard"
+                              className=" iransans relative flex items-stretch flex-grow focus-within:z-10"
+                              options={filteredPeople}
+                              noOptionsText="یافت نشد!"
+                              value={recipient}
+                              onChange={(event, newValue) => {
+                                setRecipient(newValue);
+                              }}
+                              getOptionLabel={(person) => person.full}
+                              renderInput={(params) => (
+                                <TextField
+                                  className="iransans appearance-none block w-full px-3 py-2 border border-gray-300 rounded-r-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm"
+                                  {...params}
+                                  variant="standard"
+                                  placeholder="افزودن .."
+                                  onChange={(event) =>
+                                    setQuery(event.target.value)
+                                  }
+                                />
+                              )}
+                            />
+
+                            <button
+                              onClick={(_) => {
+                                setRecieversDialogVisibility(true);
+                              }}
+                              type="button"
+                              className="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 border border-gray-300 text-sm font-medium  text-gray-700 bg-gray-50 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500"
+                            >
+                              <PlusIcon
+                                className="h-5 w-5 text-gray-400"
+                                aria-hidden="true"
+                              />
+                              <span>گروه دریافت کننده</span>
+                            </button>
+                          </div>
+                          {errors["recipient"] ? (
+                            <span className="text-sm text-red-500">
+                              {errors["recipient"]}
+                            </span>
+                          ) : null}
+                        </div>
+                        <div className="sm:col-span-6">
+                          <Textarea
+                            title="توضیحات"
+                            name="Description"
+                            onChange={(e) => {
+                              setDescription(e.target.value);
+                            }}
+                            defaultValue={description}
+                            rows="5"
+                            type="text"
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>

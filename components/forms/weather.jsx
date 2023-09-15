@@ -20,9 +20,7 @@ const TempText = styled.div`
     font-size: 30px;
     font-weight: bold;
     color: #666;
-
 `
-
 export default function WeatherWidget_Ip() {
     const [weather, setWeather] = useState({});
     useEffect(() => {
@@ -43,8 +41,10 @@ export default function WeatherWidget_Ip() {
             <div className="rcol">
                 <WidgetTitle>{weather.temperature}</WidgetTitle>
             </div>
-            <div title="تهران" className="col">
-                <IconArea>{weather.icon}</IconArea>
+                   <div title="تهران" className="col">
+                       <IconArea>
+                {weather.icon}
+                      </IconArea>
             </div>
         </>
     )

@@ -28,7 +28,7 @@ function Table({ columns, data }) {
             columns,
             data,
             initialState: {
-                hiddenColumns: ['status'],
+                hiddenColumns: ['status','edit_status'],
                 pageIndex: 0,
             },
         },
@@ -170,6 +170,12 @@ function MailRoomIssuedTable(props) {
                     },
                     {
                         Header: "شماره دبیرخانه",
+                        accessor: "edit_status",
+                        disableFilters: false,
+                        width: "20%",
+                    },
+                    {
+                        Header: "شماره دبیرخانه",
                         accessor: "indicator",
                         disableFilters: false,
                         width: "20%",
@@ -210,14 +216,16 @@ function MailRoomIssuedTable(props) {
                         Header: "وضعیت پیش نویس",
                         accessor: "is_cartable_added",
                         Cell: (props) => (
-                            props.row.values.status == 0 ?
-                            <span className="text-sm text-amber-500">در انتظار تایید</span> :
-                            props.row.values.status == 1 ?
-                                <span className="text-sm text-green-500">تایید شده</span>
-                                : props.row.values.status == 2 ?
-                                    <span className="text-sm text-red-500">رد شده</span>
-                                    : props.row.values.status == 3 ?
-                                    <span className="text-sm text-[#1f2937]">صادر شده</span> : null
+                            props.row.values.status == -1 ?
+                                props.row.values.edit_status == 0 ? <span className="text-sm text-gray-500">پیش نویس</span> : <span className="text-sm text-gray-500">تغییرات ذخیره نشده</span> :
+                                props.row.values.status == 0 ?
+                                    <span className="text-sm text-amber-500">در انتظار تایید</span> :
+                                    props.row.values.status == 1 ?
+                                        <span className="text-sm text-green-500">تایید شده</span>
+                                        : props.row.values.status == 2 ?
+                                            <span className="text-sm text-red-500">رد شده</span>
+                                            : props.row.values.status == 3 ?
+                                                <span className="text-sm text-[#1f2937]">صادر شده</span> : null
                         ),
                         disableFilters: false,
                         width: "20%",
@@ -230,12 +238,16 @@ function MailRoomIssuedTable(props) {
                         width: "5%",
                         Cell: (props) => (
                             <>
-
-                                <View
-                                    link="/mailRoom/issued/"
-                                    uuid={props.row.values.uuid}
-                                />
-
+                                {props.row.values.status == -1 ?
+                                    <View
+                                        link="/mailRoom/issued/edit/"
+                                        uuid={props.row.values.uuid}
+                                    /> :
+                                    <View
+                                        link="/mailRoom/issued/"
+                                        uuid={props.row.values.uuid}
+                                    />
+                                }
                             </>
                         ),
                     },
