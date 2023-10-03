@@ -6,6 +6,7 @@ import SidebarMobile from "../../../components/layout/sidebarMobile";
 import StickyHeader from "../../../components/layout/stickyHeader";
 import navigationList from "../../../components/layout/navigationList";
 import { useRouter } from "next/router";
+import CalendarDayRender from "../../../components/forms/calendarDayRender";
 require("react-big-calendar/lib/css/react-big-calendar.css");
 import { Dialog } from "@headlessui/react";
 import Tooltip from "@mui/material/Tooltip";
@@ -22,6 +23,8 @@ moment.locale("fa");
 import { useAuth } from "../../../hooks/auth";
 import Link from "next/link";
 import { PencilIcon, CheckIcon, XIcon } from "@heroicons/react/outline";
+import Image from "next/image";
+import Rectangle from "../../../public/images/rectangle.png";
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
@@ -38,7 +41,7 @@ export default function Proceedings() {
   const [selectedYear, setSelectedYear] = useState(1402);
   const [selectedDay, setSelectedDay] = useState(moment().format("jD"));
   const [selectedWeek, setSelectedWeek] = useState(moment().format("W"));
-  console.log(selectedWeek);
+  const [fridayNum, setFridayNum] = useState([]);
 
   const [selectedDate, setSelectedDate] = useState(
     moment().format("jYYYY/jM/jD")
@@ -54,6 +57,32 @@ export default function Proceedings() {
     middleware: "auth",
     redirectIfAuthenticated: "/",
   });
+  var newFridayNum;
+  function getFriday(firstDay) {
+    if (firstDay == 2) {
+      newFridayNum = [4, 11, 18, 25];
+    }
+    if (firstDay == 5) {
+      newFridayNum = [1, 8, 15, 22, 29];
+    }
+    if (firstDay == 1) {
+      newFridayNum = [5, 12, 19, 26];
+    }
+    if (firstDay == 6) {
+      newFridayNum = [7, 14, 21, 28];
+    }
+    if (firstDay == 3) {
+      newFridayNum = [3, 10, 17, 24, 31];
+    }
+    if (firstDay == 0) {
+      newFridayNum = [6, 13, 20, 27];
+    }
+    if (firstDay == 4) {
+      newFridayNum = [2, 9, 16, 23, 30];
+    }
+    return setFridayNum(newFridayNum);
+  }
+
   const weekDaysArray = [
     {
       id: 1,
@@ -92,6 +121,7 @@ export default function Proceedings() {
     setEditAgenda(false);
     setAgenda(param);
   }
+
   function updateAgenda(event_uuid, agenda) {
     axios
       .post("api/v1/calendar/update", {
@@ -104,6 +134,7 @@ export default function Proceedings() {
         getNewList();
       });
   }
+
   useEffect(() => {
     axios
       .get(
@@ -120,6 +151,7 @@ export default function Proceedings() {
           "jYYYY/jM/jD"
         ).day();
         setFirstDay(firstDay == 6 ? -1 : firstDay + 1);
+        getFriday(firstDay);
         selectedMonth == 12
           ? setMonthDays(
               moment.jDaysInMonth(selectedYear, moment().format("jM") - 1) +
@@ -131,7 +163,7 @@ export default function Proceedings() {
                 1
             );
       });
-  }, []);
+  }, [selectedMonth]);
 
   function getNewList(year = null, month = null) {
     let month_temp = month ? month : selectedMonth;
@@ -188,7 +220,6 @@ export default function Proceedings() {
 
   function checkIfToday(selectedEvent) {
     var today = Date.now();
-    console.log(today);
     if (selectedEvent.timestamp * 1000 <= today) {
       return true;
     }
@@ -212,6 +243,7 @@ export default function Proceedings() {
     if (currentUserActions && currentUserActions.indexOf(val) > -1) return true;
     return false;
   }
+
   return (
     <div>
       <SidebarMobile menu={navigationList()} loc={asPath} />
@@ -243,7 +275,9 @@ export default function Proceedings() {
                             setSelectedYear(year.currentTarget.value);
                             getNewList(year.currentTarget.value, selectedMonth);
                           }}
-                          className="pr-10 relative items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
+                          className="pr-10 relative items-center px-4 py-2 border
+                         border-gray-300 shadow-sm text-sm font-medium 
+                          rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
                         >
                           <option> انتخاب سال </option>
                           <option selected={selectedYear == 1403} value={1403}>
@@ -307,7 +341,7 @@ export default function Proceedings() {
                       </div>
                     </div>
                     <div className="ml-4 mt-2 flex-shrink-0 space-x-2 space-x-reverse">
-                      {CheckIfAccess("add_event") ? (
+                      {CheckIfAccess("add_event") && (
                         <Link href="/proceedingMenu/proceedingsCalendar/store">
                           <button
                             type="button"
@@ -320,7 +354,7 @@ export default function Proceedings() {
                             <span>افزودن جلسه جدید</span>
                           </button>
                         </Link>
-                      ) : null}
+                      )}
                     </div>
                   </div>
                 </div>
@@ -343,13 +377,13 @@ export default function Proceedings() {
                       <div className="bg-white py-2">جمعه</div>
                     </div>
 
-                    <div className="flex bg-gray-200 text-xs leading-6 text-gray-700 lg:flex-auto">
+                    <div className="flex bg-gray-200 text-xs leading-6 text-gray-400 lg:flex-auto">
                       <div className="hidden w-full lg:grid lg:grid-cols-7 lg:grid-rows-1 lg:gap-px">
                         {weekDaysArray.map((item, i) => {
                           return (
                             <div
                               key={i}
-                              className="relative bg-[#1f2937] text-white py-2 px-3 h-10 hover:bg-[#374151]"
+                              className="relative text-sm font-semibold border-[#82B9FF] bg-[#ABD1FF] text-[#123866] py-2 px-3 h-10 hover:bg-[#58A2FF]"
                             >
                               <span>{item.value}</span>
                             </div>
@@ -366,6 +400,8 @@ export default function Proceedings() {
                             1 -
                             (firstDayOfMonth == -1 ? 0 : firstDayOfMonth)
                           }`;
+                          const dateParts = day_string.split("/");
+                          const lastNumber = dateParts[dateParts.length - 1];
                           return day - firstDayOfMonth < 0 ? (
                             <div
                               key={key}
@@ -380,11 +416,25 @@ export default function Proceedings() {
                               className={`relative ${
                                 p2e(new Date().toLocaleDateString("fa-IR")) ==
                                 day_string
-                                  ? "bg-gray-100"
-                                  : "bg-white"
-                              } bg-white py-2 px-3 h-40 hover:bg-gray-50`}
+                                  ? "border-b-8 bg-white border-b-[#2E8BFF] py-2 px-3 h-40 "
+                                  : "bg-white py-2 px-3 h-40"
+                              }`}
                             >
-                              <span>
+                              <span
+                                className={`${
+                                  p2e(new Date().toLocaleDateString("fa-IR")) ==
+                                  day_string
+                                    ? "text-[#2E8BFF] font-semibold text-base"
+                                    : fridayNum.includes(
+                                        day +
+                                          1 -
+                                          (firstDayOfMonth == -1
+                                            ? 0
+                                            : firstDayOfMonth)
+                                      ) && "text-[#FF4646] font-semibold"
+                                } py-2 px-3 h-40 font-semibold hover:bg-gray-100 text-sm
+                                `}
+                              >
                                 {day +
                                   1 -
                                   (firstDayOfMonth == -1 ? 0 : firstDayOfMonth)}
@@ -403,24 +453,31 @@ export default function Proceedings() {
                                           setAgenda(meet.agenda);
                                         }}
                                         key={meet_key}
-                                        className="flex justify-between items-center bg-amber-400 px-1 rounded-md"
+                                        className={`${
+                                          meet.status == 1
+                                            ? "bg-[#D3EEDE] flex justify-between items-center px-1 rounded-md"
+                                            : meet.is_canceled
+                                            ? "bg-[#FFD7D7] flex justify-between items-center px-1 rounded-md"
+                                            : "bg-[#FFE896] flex justify-between items-center px-1 rounded-md"
+                                        }`}
                                       >
-                                        <p className="text-[10px]">
-                                          {meet.title}
-                                        </p>
                                         {meet.status ? (
-                                          <Tooltip title="برگزار شده">
-                                            <span className="w-2 h-2 inline-block rounded-full text-[11px] font-bold bg-green-500"></span>
-                                          </Tooltip>
+                                          <div
+                                            className="bg-[#22AA5B] h-6 w-2 rounded-md mr-1"
+                                            title="برگزار شده"
+                                          ></div>
                                         ) : meet.is_canceled ? (
-                                          <Tooltip title="لغو شده">
-                                            <span className="w-2 h-2 inline-block rounded-full text-[11px] font-bold bg-gray-600"></span>
-                                          </Tooltip>
+                                          <div
+                                            className="bg-[#FF4646]  h-6 w-2 rounded-md mr-1"
+                                            title="برگزار نشده"
+                                          ></div>
                                         ) : (
-                                          <Tooltip title="برگزار نشده">
-                                            <span className="w-2 h-2 inline-block rounded-full text-[11px] font-bold bg-red-600"></span>
-                                          </Tooltip>
+                                          <div
+                                            title="لغو شده"
+                                            className=" bg-[#A58309] h-6 w-2 rounded-md mr-1"
+                                          ></div>
                                         )}
+                                        <p className="w-full">{meet.title}</p>
                                       </button>
                                     );
                                   }
@@ -559,9 +616,6 @@ export default function Proceedings() {
                       <Textarea
                         title="دستور جلسه"
                         name="Agenda"
-                        // defaultValue={
-                        //     selectedEvent.agenda != null ? selectedEvent.agenda : "دستور جلسه وارد نشده است"
-                        // }
                         onChange={(e) => {
                           setAgenda(e.target.value);
                         }}
@@ -581,7 +635,7 @@ export default function Proceedings() {
                               className="ml-1 h-5 w-5 text-blue-600"
                               aria-hidden="true"
                             />
-                          </button>{" "}
+                          </button>
                         </div>
                       ) : null}
                       {editAgenda ? (

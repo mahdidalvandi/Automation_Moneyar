@@ -1,4 +1,6 @@
 import { PencilIcon } from "@heroicons/react/outline";
+import EditPic from "../../public/images/edit.png";
+import Image from "next/image";
 
 export default function Edit(props) {
   const { color, text, style, link, uuid } = props;
@@ -7,7 +9,7 @@ export default function Edit(props) {
   };
   return (
     <button onClick={(e) => handleClick(link, uuid)} className="mr-2">
-      <PencilIcon className="h-5 w-5" aria-hidden="true"></PencilIcon>
+      <Image src={EditPic} />
       {/* <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6"

@@ -170,7 +170,7 @@ export default function SubStoreCalendar() {
         });
 
   const onSubmit = async (event) => {
-    event.preventDefault();
+    // event.preventDefault();
     if (
       !authorUUID ||
       title == "" ||

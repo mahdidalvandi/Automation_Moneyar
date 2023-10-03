@@ -164,7 +164,9 @@ export default function Dashboard() {
                     <button
                       type="button"
                       onClick={() => setOpen(true)}
-                      className="relative inline-flex items-center ml-2 px-4 py-2  shadow-sm text-sm font-medium rounded-md text-white bg-[#ffc107] hover:bg-[#a97e35] focus:outline-none "
+                      className="relative inline-flex items-center ml-2 px-4 py-2 
+                      shadow-sm text-sm font-medium rounded-md text-white
+                    bg-[#ffc107] hover:bg-[#a97e35] focus:outline-none"
                     >
                       <SearchIcon
                         className="ml-2 h-5 w-5 text-white"
@@ -356,15 +358,7 @@ export default function Dashboard() {
                                             }}
                                           />
                                         </td>
-                                        <td id="td0" align="right">
-                                          {/* <button
-                                           onClick={() => removeDate()}>
-                                           <XCircleIcon
-                                           className="ml-1 h-5 w-5 text-red-600"
-                                           aria-hidden="true"
-                                       />
-                         </button> */}
-                                        </td>
+                                        <td id="td0" align="right"></td>
                                       </tr>
                                     </tbody>
                                   </table>

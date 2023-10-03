@@ -333,7 +333,9 @@ export default function NewEmail() {
     setIsCarbonCopy(value);
     setQuery("");
   };
-
+  const crossHandler = () => {
+    setRegarding({ indic: "", subj: "" });
+  };
   const deleteFile = (value, index) => {
     axios.delete(`/api/v1/file/delete`, {
       data: {
@@ -874,9 +876,27 @@ export default function NewEmail() {
                               <span>افزودن نامه از لیست</span>
                             </button>
                           ) : (
-                            <p className="mt-4">
-                              {regarding.subj + " (" + regarding.indic + ")"}
-                            </p>
+                            <div className="flex items-center text-center">
+                              <p className="mt-4">
+                                {regarding.subj + " (" + regarding.indic + ")"}
+                              </p>
+                              <button
+                                onClick={crossHandler}
+                                className="inline-flex text-center items-center mt-4 ml-1"
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="24"
+                                  height="24"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    fill="red"
+                                    d="M18.36 19.78L12 13.41l-6.36 6.37l-1.42-1.42L10.59 12L4.22 5.64l1.42-1.42L12 10.59l6.36-6.36l1.41 1.41L13.41 12l6.36 6.36z"
+                                  />
+                                </svg>
+                              </button>
+                            </div>
                           )}
                         </div>
 
@@ -1270,6 +1290,8 @@ export default function NewEmail() {
           setRegarding({ indic: props.indic, subj: props.subj })
         }
       />
+      {console.log(regarding)}
+
       <Snackbar
         anchorOrigin={{
           horizontal: "center",

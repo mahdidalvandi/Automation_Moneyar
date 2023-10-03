@@ -133,13 +133,13 @@ export default function Login() {
                 ) : null}
               </div>
               <div className="w-full px-4 sm:px-6 md:px-8">
-                {currentUserRole ? (
+                {currentUserRole && (
                   <CompanyReportTable
                     loadingData={false}
                     data={searchHasValue ? searchData : data}
                     roleData={currentUserRole}
                   />
-                ) : null}
+                )}
               </div>
             </div>
           </main>

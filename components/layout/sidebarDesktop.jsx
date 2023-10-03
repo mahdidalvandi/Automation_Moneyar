@@ -208,8 +208,17 @@ function SidebarDesktop(props) {
                           <table className="w-full">
                             <tbody>
                               <tr id="tr0">
-                                <td id="td0" align="right">
+                                <td
+                                  id="td0"
+                                  align="right"
+                                  className="flex justify-between items-center"
+                                >
                                   {item.name}
+                                  {isActive != 1 ? (
+                                    <KeyboardArrowLeftIcon className="text-gray-400" />
+                                  ) : (
+                                    <KeyboardArrowDownIcon className="text-gray-400" />
+                                  )}
                                 </td>
                                 {unreadCount > 0 ? (
                                   <td id="td2">
@@ -235,6 +244,25 @@ function SidebarDesktop(props) {
                                     </span>
                                   </td>
                                 ) : null}
+                              </tr>
+                            </tbody>
+                          </table>
+                        ) : item.name == "مالی" ? (
+                          <table className="w-full">
+                            <tbody>
+                              <tr id="tr0">
+                                <td
+                                  id="td0"
+                                  className="flex justify-between items-center"
+                                  align="right"
+                                >
+                                  {item.name}
+                                  {isActive != 6 ? (
+                                    <KeyboardArrowLeftIcon className="text-gray-400" />
+                                  ) : (
+                                    <KeyboardArrowDownIcon className="text-gray-400" />
+                                  )}
+                                </td>
                               </tr>
                             </tbody>
                           </table>
@@ -274,49 +302,23 @@ function SidebarDesktop(props) {
                                   align="right"
                                 >
                                   {item.name}
-                                  {isActive != 6 ? (
-                                    <KeyboardArrowLeftIcon className="text-gray-400" />
-                                  ) : (
-                                    <KeyboardArrowDownIcon className="text-gray-400" />
-                                  )}
-                                </td>
-                                {mailRoomCount > 0 ? (
-                                  <td id="td2">
-                                    <span className="numberCircle">
-                                      {mailRoomCount}
-                                    </span>
-                                  </td>
-                                ) : null}
-                              </tr>
-                            </tbody>
-                          </table>
-                        ) : item.name == "جذب و استخدام" ? (
-                          <table className="w-full">
-                            <tbody>
-                              <tr id="tr0">
-                                <td
-                                  id="td0"
-                                  className="flex justify-between items-center"
-                                  align="right"
-                                >
-                                  {item.name}
                                   {isActive != 7 ? (
                                     <KeyboardArrowLeftIcon className="text-gray-400" />
                                   ) : (
                                     <KeyboardArrowDownIcon className="text-gray-400" />
                                   )}
                                 </td>
-                                {mailRoomCount > 0 ? (
+                                {/* {mailRoomCount > 0 ? (
                                   <td id="td2">
                                     <span className="numberCircle">
                                       {mailRoomCount}
                                     </span>
                                   </td>
-                                ) : null}
+                                ) : null} */}
                               </tr>
                             </tbody>
                           </table>
-                        ) : item.name == "مدیریت جلسات" ? (
+                        ) : item.name == "جذب و استخدام" ? (
                           <table className="w-full">
                             <tbody>
                               <tr id="tr0">
@@ -332,17 +334,17 @@ function SidebarDesktop(props) {
                                     <KeyboardArrowDownIcon className="text-gray-400" />
                                   )}
                                 </td>
-                                {mailRoomCount > 0 ? (
+                                {/* {mailRoomCount > 0 ? (
                                   <td id="td2">
                                     <span className="numberCircle">
                                       {mailRoomCount}
                                     </span>
                                   </td>
-                                ) : null}
+                                ) : null} */}
                               </tr>
                             </tbody>
                           </table>
-                        ) : item.name == "گزارش‌ها" ? (
+                        ) : item.name == "مدیریت جلسات" ? (
                           <table className="w-full">
                             <tbody>
                               <tr id="tr0">
@@ -352,23 +354,23 @@ function SidebarDesktop(props) {
                                   align="right"
                                 >
                                   {item.name}
-                                  {isActive != 11 ? (
+                                  {isActive != 3 ? (
                                     <KeyboardArrowLeftIcon className="text-gray-400" />
                                   ) : (
                                     <KeyboardArrowDownIcon className="text-gray-400" />
                                   )}
                                 </td>
-                                {mailRoomCount > 0 ? (
+                                {/* {mailRoomCount > 0 ? (
                                   <td id="td2">
                                     <span className="numberCircle">
                                       {mailRoomCount}
                                     </span>
                                   </td>
-                                ) : null}
+                                ) : null} */}
                               </tr>
                             </tbody>
                           </table>
-                        ) : item.name == "انبار داده" ? (
+                        ) : item.name == "گزارش‌ها" ? (
                           <table className="w-full">
                             <tbody>
                               <tr id="tr0">
@@ -384,13 +386,39 @@ function SidebarDesktop(props) {
                                     <KeyboardArrowDownIcon className="text-gray-400" />
                                   )}
                                 </td>
-                                {mailRoomCount > 0 ? (
+                                {/* {mailRoomCount > 0 ? (
                                   <td id="td2">
                                     <span className="numberCircle">
                                       {mailRoomCount}
                                     </span>
                                   </td>
-                                ) : null}
+                                ) : null} */}
+                              </tr>
+                            </tbody>
+                          </table>
+                        ) : item.name == "انبار داده" ? (
+                          <table className="w-full">
+                            <tbody>
+                              <tr id="tr0">
+                                <td
+                                  id="td0"
+                                  className="flex justify-between items-center"
+                                  align="right"
+                                >
+                                  {item.name}
+                                  {isActive != 10 ? (
+                                    <KeyboardArrowLeftIcon className="text-gray-400" />
+                                  ) : (
+                                    <KeyboardArrowDownIcon className="text-gray-400" />
+                                  )}
+                                </td>
+                                {/* {mailRoomCount > 0 ? (
+                                  <td id="td2">
+                                    <span className="numberCircle">
+                                      {mailRoomCount}
+                                    </span>
+                                  </td>
+                                ) : null} */}
                               </tr>
                             </tbody>
                           </table>
@@ -418,11 +446,14 @@ function SidebarDesktop(props) {
                                 href={subListItem.href}
                                 className={classNames(
                                   props.loc.includes(subListItem.href)
-                                    ? "text-[#22AA5B]"
+                                    ? "text-[#22AA5B] bg-white"
                                     : "text-black hover:bg-[#7188ad]",
                                   "w-full group flex items-center px-2 py-2 text-sm font-medium rounded-md"
                                 )}
                               >
+                                {props.loc.includes(subListItem.href) && (
+                                  <div className="w-[6px] h-[6px] bg-[#22AA5B] rounded-full ml-1"></div>
+                                )}
                                 {/* <subListItem.icon
                                                                         className="ml-3 bg flex-shrink-0 h-6 w-6 text-white"
                                                                         aria-hidden="true"
@@ -434,13 +465,13 @@ function SidebarDesktop(props) {
                                         <td id="td0" align="right">
                                           {subListItem.name}
                                         </td>
-                                        {unreadCount > 0 ? (
+                                        {unreadCount > 0 && (
                                           <td id="td2">
                                             <span className="numberCircle">
                                               {unreadCount}
                                             </span>
                                           </td>
-                                        ) : null}
+                                        )}
                                       </tr>
                                     </tbody>
                                   </table>

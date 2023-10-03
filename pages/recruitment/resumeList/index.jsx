@@ -43,6 +43,9 @@ export default function ProceedingsList() {
   const [query, setQuery] = useState("");
   const [selectedHashtags, setSelectedHashtags] = useState([]);
   const [selectedHashtagsTitles, setSelectedHashtagsTitles] = useState([]);
+  const [allData, setAllData] = useState({});
+  const router = useRouter();
+  var obj = router.query;
   const filteredTags =
     query === ""
       ? hashtags
@@ -134,20 +137,22 @@ export default function ProceedingsList() {
       setSearchHashtagsData(resumeBuf);
     }
   }
-  useEffect(() => {
-    GetData();
-  }, []);
-  const p2e = (s) => s.replace(/[۰-۹]/g, (d) => "۰۱۲۳۴۵۶۷۸۹".indexOf(d));
-  const GetData = () => {
-    axios.get(`/api/v1/interview/all`).then((res) => {
+  var GetData = () => {
+    const updatedPINdex = obj.hasOwnProperty("") ? obj[""].split("-")[1] : 1;
+    axios.get(`/api/v1/interview/all?page=${updatedPINdex}`).then((res) => {
       setLoading(false);
-      setData(res.data.data.reverse());
+      setAllData(res.data.data);
+      setData(res.data.data.data);
       setSearchData([]);
       setSearchHashtagsData([]);
       setSearchHasValue(false);
       setSearchHashtagsHasValue(false);
     });
   };
+  useEffect(() => {
+    GetData();
+  }, [obj]);
+  const p2e = (s) => s.replace(/[۰-۹]/g, (d) => "۰۱۲۳۴۵۶۷۸۹".indexOf(d));
 
   if (isLoading || !user || loading) {
     return null;
@@ -160,6 +165,8 @@ export default function ProceedingsList() {
     if (currentUserActions && currentUserActions.indexOf(val) > -1) return true;
     return false;
   }
+  console.log(allData);
+  console.log(data);
   return (
     <div>
       <SidebarMobile menu={navigationList()} loc={asPath} />
@@ -281,6 +288,7 @@ export default function ProceedingsList() {
                   </div>
                 </div>
                 <ResumeTable
+                  allData={allData}
                   data={
                     searchHasValue
                       ? searchData

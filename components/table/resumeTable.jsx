@@ -7,13 +7,13 @@ import Chip from "@mui/material/Chip";
 import Avatar from "@mui/material/Avatar";
 import Stack from "@mui/material/Stack";
 import _ from "lodash";
-
 import moment from "jalali-moment";
 import Archive from "../forms/archive";
 import { useMemo } from "react";
+import PaginationItems from "../Pagination/PaginationItems";
 moment.locale("fa");
 
-function Table({ columns, data }) {
+function Table({ columns, data, allData }) {
   const defaultColumn = React.useMemo(
     () => ({
       Filter: DefaultColumnFilter,
@@ -91,16 +91,16 @@ function Table({ columns, data }) {
 
   // Render the UI for your table
   return (
-    <div className="overflow-x-auto">
+    <div className="">
       <table className="w-full divide-y divide-gray-300" {...getTableProps()}>
-        <thead className="bg-gray-50">
+        <thead className="bg-gray-50 [text-align-last:right] ">
           {headerGroups.map((group, i) => (
-            <tr key={i} {...group.getHeaderGroupProps()}>
+            <tr key={i} className="" {...group.getHeaderGroupProps()}>
               {group.headers.map((column, i) => {
                 return column.hideHeader === false ? null : (
                   <th
                     key={i}
-                    className="py-3 pl-2 pr-2 text-center text-sm font-semibold text-gray-900 sm:pr-3"
+                    className="py-3 pl-2  bg-[#D5E8FF] text-sm font-semibold text-gray-900 sm:pr-3"
                     {...column.getHeaderProps({
                       style: {
                         minWidth: column.minWidth,
@@ -108,7 +108,7 @@ function Table({ columns, data }) {
                       },
                     })}
                   >
-                    <p className="text-l text-center">
+                    <p className="text-l ml-4 text-center">
                       {column.render("Header")}
                     </p>
 
@@ -124,7 +124,7 @@ function Table({ columns, data }) {
             prepareRow(row);
             return (
               <tr
-                className={`${i % 2 === 0 ? "bg-gray-100" : ""}`}
+                className={`${i % 2 === 0 ? "bg-[#E3E3E3] text-center" : ""}`}
                 key={i}
                 {...row.getRowProps()}
               >
@@ -132,7 +132,7 @@ function Table({ columns, data }) {
                   return (
                     <td
                       key={i}
-                      className={`relative whitespace-nowrap  py-3 pl-2 pr-2 text-center text-sm font-medium sm:pr-3`}
+                      className={`relative whitespace-nowrap text-right  py-3 pl-2 pr-2  text-sm font-medium sm:pr-3`}
                       {...cell.getCellProps()}
                     >
                       {cell.render("Cell")}
@@ -145,62 +145,16 @@ function Table({ columns, data }) {
         </tbody>
         <tfoot></tfoot>
       </table>
-      <div className="border-t pt-5 border-gray-200">
-        <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
-          {"<<"}
-        </button>{" "}
-        <button onClick={() => previousPage()} disabled={!canPreviousPage}>
-          قبلی
-        </button>{" "}
-        <button onClick={() => nextPage()} disabled={!canNextPage}>
-          بعدی
-        </button>{" "}
-        <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
-          {">>"}
-        </button>{" "}
-        <span>
-          صفحه{"   "}
-          <strong>
-            {pageIndex + 1} از {pageOptions.length}
-          </strong>{" "}
-        </span>
-        <span>
-          | برو به صفحه:{" "}
-          <input
-            type="number"
-            defaultValue={pageIndex + 1}
-            onChange={(e) => {
-              const pageNumber = e.target.value
-                ? Number(e.target.value) - 1
-                : 0;
-              gotoPage(pageNumber);
-            }}
-            style={{ width: "50px" }}
-          />
-        </span>{" "}
-        <select
-          value={pageSize}
-          onChange={(e) => setPageSize(Number(e.target.value))}
-        >
-          {[10, 25, 50].map((pageSize) => (
-            <option key={pageSize} value={pageSize}>
-              نمایش {pageSize}
-            </option>
-          ))}
-        </select>
-      </div>
+      <div className="border-t pt-5 border-gray-200"></div>
+      <PaginationItems allData={allData} />
     </div>
   );
 }
 
 function ResumeTable(props) {
-  function CheckIfAccess(val) {
-    if (roleData && roleData.indexOf(val) > -1) return true;
-    return false;
-  }
   const { roleData, setClicked, isArchived } = props;
   // const [loadingData, setLoadingData] = useState(true);
-  const { data, loadingData, searchedTag } = props;
+  const { data, loadingData, searchedTag, allData } = props;
 
   const columnsWithTags = useMemo(() => {
     if (!roleData) {
@@ -241,12 +195,12 @@ function ResumeTable(props) {
             Header: "متقاضی",
             accessor: "applicant_name",
             disableFilters: false,
-            width: "5%",
+            width: "10%",
             Cell: (props) => (
               <>
                 <p className="text-lg">{`${props.row.values.applicant_name}`}</p>
-                <p className="text-sm text-gray=400">{`${props.row.values.applicant_job_position}`}</p>
-                <p className="text-sm text-gray=400">{`${props.row.values.applicant_mobile}`}</p>
+                <p className="text-sm text-[#666666]">{`${props.row.values.applicant_job_position}`}</p>
+                <p className="text-sm text-[#666666]">{`${props.row.values.applicant_mobile}`}</p>
               </>
             ),
           },
@@ -254,11 +208,10 @@ function ResumeTable(props) {
             Header: "وضعیت مصاحبه عمومی",
             accessor: "applicant_public_result",
             disableFilters: false,
-            width: "20%",
+            width: "10%",
             Cell: (props) =>
               props.row.values.applicant_public_result ? (
                 <>
-                  {/* <p className="text-green-500">{`انجام شده`}</p> */}
                   <p
                     className={`${
                       props.row.values.applicant_public_result.approved ==
@@ -280,8 +233,8 @@ function ResumeTable(props) {
                                     ? "مشروط"
                                     : "عدم توافق پکیج"
                                 }`}</p>
-                  <p>{`مصاحبه کننده: ${props.row.values.applicant_public_result.interviewer_name}`}</p>
-                  <p>{`تاریخ : ${moment
+                  <p className="text-[#666666]">{`مصاحبه کننده: ${props.row.values.applicant_public_result.interviewer_name}`}</p>
+                  <p className="text-[#666666]">{`تاریخ : ${moment
                     .unix(props.row.values.applicant_public_result.timestamp)
                     .format("YYYY/MM/DD")}`}</p>
                 </>
@@ -295,7 +248,7 @@ function ResumeTable(props) {
             Header: "وضعیت مصاحبه تخصصی",
             accessor: "applicant_expert_result",
             disableFilters: false,
-            width: "20%",
+            width: "10%",
             Cell: (props) =>
               props.row.values.applicant_expert_result ? (
                 <>
@@ -336,7 +289,7 @@ function ResumeTable(props) {
             Header: "نظر مدیریت",
             accessor: "applicant_manager_result",
             disableFilters: false,
-            width: "20%",
+            width: "10%",
             Cell: (props) =>
               props.row.values.applicant_manager_result ? (
                 <>
@@ -361,8 +314,8 @@ function ResumeTable(props) {
                                     ? "مشروط"
                                     : "عدم توافق پکیج"
                                 }`}</p>
-                  <p>{`توضیحات : ${props.row.values.applicant_manager_result.comment}`}</p>
-                  <p>{`تاریخ : ${moment
+                  <p className="text-[#666666]">{`توضیحات : ${props.row.values.applicant_manager_result.comment}`}</p>
+                  <p className="text-[#666666]">{`تاریخ : ${moment
                     .unix(props.row.values.applicant_manager_result.timestamp)
                     .format("YYYY/MM/DD")}`}</p>
                 </>
@@ -494,12 +447,12 @@ function ResumeTable(props) {
             Header: "متقاضی",
             accessor: "applicant_name",
             disableFilters: false,
-            width: "5%",
+            width: "7%",
             Cell: (props) => (
               <>
                 <p className="text-lg">{`${props.row.values.applicant_name}`}</p>
-                <p className="text-sm text-gray=400">{`${props.row.values.applicant_job_position}`}</p>
-                <p className="text-sm text-gray=400">{`${props.row.values.applicant_mobile}`}</p>
+                <p className="text-sm text-[#666666]">{`${props.row.values.applicant_job_position}`}</p>
+                <p className="text-sm text-[#666666]">{`${props.row.values.applicant_mobile}`}</p>
               </>
             ),
           },
@@ -507,7 +460,7 @@ function ResumeTable(props) {
             Header: "وضعیت مصاحبه عمومی",
             accessor: "applicant_public_result",
             disableFilters: false,
-            width: "20%",
+            width: "8%",
             Cell: (props) =>
               props.row.values.applicant_public_result ? (
                 <>
@@ -548,7 +501,7 @@ function ResumeTable(props) {
             Header: "وضعیت مصاحبه تخصصی",
             accessor: "applicant_expert_result",
             disableFilters: false,
-            width: "20%",
+            width: "10%",
             Cell: (props) =>
               props.row.values.applicant_expert_result ? (
                 <>
@@ -574,8 +527,8 @@ function ResumeTable(props) {
                                     ? "مشروط"
                                     : "عدم توافق پکیج"
                                 }`}</p>
-                  <p>{`مصاحبه کننده: ${props.row.values.applicant_expert_result.interviewer_name}`}</p>
-                  <p>{`تاریخ : ${moment
+                  <p className="text-[#666666]">{`مصاحبه کننده: ${props.row.values.applicant_expert_result.interviewer_name}`}</p>
+                  <p className="text-[#666666]">{`تاریخ : ${moment
                     .unix(props.row.values.applicant_expert_result.timestamp)
                     .format("YYYY/MM/DD")}`}</p>
                 </>
@@ -589,7 +542,7 @@ function ResumeTable(props) {
             Header: "نظر مدیریت",
             accessor: "applicant_manager_result",
             disableFilters: false,
-            width: "20%",
+            width: "5%",
             Cell: (props) =>
               props.row.values.applicant_manager_result ? (
                 <>
@@ -614,8 +567,8 @@ function ResumeTable(props) {
                                     ? "مشروط"
                                     : "عدم توافق پکیج"
                                 }`}</p>
-                  <p>{`توضیحات : ${props.row.values.applicant_manager_result.comment}`}</p>
-                  <p>{`تاریخ : ${moment
+                  <p className="text-[#666666]">{`توضیحات : ${props.row.values.applicant_manager_result.comment}`}</p>
+                  <p className="text-[#666666]">{`تاریخ : ${moment
                     .unix(props.row.values.applicant_manager_result.timestamp)
                     .format("YYYY/MM/DD")}`}</p>
                 </>
@@ -634,14 +587,16 @@ function ResumeTable(props) {
               >
                 <button
                   type="button"
-                  className="ml-2 inline-flex justify-center rounded-md py-2 px-4 text-sm font-medium text-white shadow-sm bg-[#43a047] hover:bg-[#2d592f] focus:outline-none "
+                  className="ml-2 inline-flex justify-center rounded-md py-2 px-4
+                  text-sm border border-[#22AA5B] font-semibold text-[#22AA5B]
+                  shadow-sm hover:bg-[#c3f7c5] focus:outline-none "
                 >
-                  <span>&nbsp; مشاهده فرم اطلاعات&nbsp;</span>
+                  <span>&nbsp;نمایش فرم&nbsp;</span>
                 </button>
               </Link>
             ),
             disableFilters: false,
-            width: "10%",
+            width: "0%",
           },
           {
             Header: "",
@@ -673,6 +628,7 @@ function ResumeTable(props) {
         </SkeletonTheme>
       ) : (
         <Table
+          allData={allData}
           columns={
             searchedTag && searchedTag.length > 0 ? columnsWithTags : columns
           }

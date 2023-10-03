@@ -42,7 +42,7 @@ export default function AddUser() {
   };
   const DownloadFile = () => {
     axios
-      .get(`/api/v1/file/download_sample`, {
+      .get("/api/v1/file/download_sample", {
         params: {},
         responseType: "blob",
       })
@@ -321,7 +321,6 @@ export default function AddUser() {
                             type="button"
                             onClick={() => DownloadFile()}
                           >
-                            {" "}
                             دانلود فایل اکسل نمونه
                           </button>
                         </label>

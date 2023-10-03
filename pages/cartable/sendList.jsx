@@ -16,7 +16,6 @@ import DatePicker, { DateObject } from "react-multi-date-picker";
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
 import React from "react";
-import TimePicker from "react-multi-date-picker/plugins/time_picker";
 import Forbidden from "../../components/forms/forbidden";
 
 function classNames(...classes) {
@@ -40,6 +39,9 @@ export default function Dashboard() {
   const [endDate, setEndDate] = useState({});
   const [currentUserRole, setCurrentUserRole] = useState();
   const [currentUserActions, setCurrentUserActions] = useState();
+  const [allData, setAllData] = useState({});
+  const router = useRouter();
+  var obj = router.query;
 
   const { user, isLoading } = useAuth({
     middleware: "auth",
@@ -92,18 +94,20 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    if (loadingData) {
-      getData();
+    async function getData() {
+      const updatedPINdex = obj.hasOwnProperty("") ? obj[""].split("-")[1] : 1;
+      await axios
+        .get(`/api/v1/cartable/list?type=3&page=${updatedPINdex}`)
+        .then((response) => {
+          setAllData(response.data.data);
+          setData(response.data.data.data);
+          setDefaultData(response.data.data);
+          setLoadingData(false);
+        });
     }
-  }, []);
+    getData();
+  }, [obj]);
 
-  async function getData() {
-    await axios.get(`/api/v1/cartable/list?type=3`).then((response) => {
-      setData(response.data.data);
-      setDefaultData(response.data.data);
-      setLoadingData(false);
-    });
-  }
   function CheckIfAccessToPage(val) {
     if (currentUserActions && currentUserActions.indexOf(val) > -1) return true;
     return false;
@@ -112,6 +116,8 @@ export default function Dashboard() {
   if (isLoading || !user) {
     return null;
   }
+  console.log(allData);
+  console.log(data);
 
   return (
     <div>
@@ -168,6 +174,7 @@ export default function Dashboard() {
               </div>
             </div>
             <TablePage
+              allData={allData}
               data={data}
               loadingData={loadingData}
               source="sendList"

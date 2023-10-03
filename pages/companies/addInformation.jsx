@@ -602,8 +602,8 @@ export default function AddUser() {
                           </svg>
                           اضافه کردن محصول جدید
                         </button>
-                        <table className="font-light table-auto w-full text-sm font-light my-3 shadow rounded-md overflow-hidden">
-                          <thead className="bg-gray-100">
+                        <table className="font-light table-auto w-full text-sm my-3 shadow rounded-md overflow-hidden">
+                          <thead className="bg-[#D5E8FF]">
                             <tr>
                               <th className="p-2">ردیف</th>
                               <th className="text-right">محصول</th>
@@ -730,8 +730,8 @@ export default function AddUser() {
                           اضافه کردن سهامدار جدید
                         </button>
 
-                        <table className="font-light table-auto w-full text-sm font-light my-3 shadow rounded-md overflow-hidden">
-                          <thead className="bg-gray-100">
+                        <table className="table-auto w-full text-sm font-light my-3 shadow rounded-md overflow-hidden">
+                          <thead className="bg-[#D5E8FF]">
                             <tr>
                               <th className="p-2">ردیف</th>
                               <th className="text-right">نام سهامدار</th>
@@ -895,7 +895,7 @@ export default function AddUser() {
                           اضافه کردن عضو جدید
                         </button>
                         <table className="font-light table-auto w-full text-sm my-3 shadow rounded-md overflow-hidden">
-                          <thead className="bg-gray-100">
+                          <thead className="bg-[#D5E8FF]">
                             <tr>
                               <th className="p-2">ردیف</th>
                               <th className="text-right">نام و نام خانوادگی</th>

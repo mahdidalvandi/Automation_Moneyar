@@ -7,8 +7,11 @@ import "react-loading-skeleton/dist/skeleton.css";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import View from "../forms/view";
 import Link from "next/link";
+import Seen from "../../public/images/seen.png";
+import UnSeen from "../../public/images/unseen.png";
 
 import moment from "jalali-moment";
+import Image from "next/image";
 moment.locale("fa");
 
 function Table({ columns, data }) {
@@ -44,7 +47,6 @@ function Table({ columns, data }) {
           return rowValue !== undefined
             ? String(rowValue)
                 .toLowerCase()
-
                 .startsWith(String(filterValue).toLowerCase())
             : true;
         });
@@ -72,7 +74,11 @@ function Table({ columns, data }) {
     {
       columns,
       data,
-      initialState: { pageIndex: 0, hiddenColumns: ["is_canceled"] },
+      initialState: {
+        pageIndex: 0,
+        hiddenColumns: ["is_canceled", "uuid"],
+        pageSize: 500,
+      },
     },
     // useFilters,
     usePagination
@@ -82,9 +88,9 @@ function Table({ columns, data }) {
 
   // Render the UI for your table
   return (
-    <div className="overflow-x-auto">
+    <div className="">
       <table className="w-full divide-y divide-gray-300" {...getTableProps()}>
-        <thead className="bg-gray-50">
+        <thead className="bg-[#D5E8FF]">
           {headerGroups.map((group, i) => (
             <tr key={i} {...group.getHeaderGroupProps()}>
               {group.headers.map((column, i) => {
@@ -114,7 +120,11 @@ function Table({ columns, data }) {
           {page.map((row, i) => {
             prepareRow(row);
             return (
-              <tr key={i} {...row.getRowProps()}>
+              <tr
+                className={` ${i % 2 === 1 ? "bg-[#E3E3E3]" : ""}`}
+                key={i}
+                {...row.getRowProps()}
+              >
                 {row.cells.map((cell, i) => {
                   return (
                     <td
@@ -132,50 +142,6 @@ function Table({ columns, data }) {
         </tbody>
         <tfoot></tfoot>
       </table>
-      <div className="border-t pt-5 border-gray-200">
-        <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
-          {"<<"}
-        </button>{" "}
-        <button onClick={() => previousPage()} disabled={!canPreviousPage}>
-          قبلی
-        </button>{" "}
-        <button onClick={() => nextPage()} disabled={!canNextPage}>
-          بعدی
-        </button>{" "}
-        <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
-          {">>"}
-        </button>{" "}
-        <span>
-          صفحه{"   "}
-          <strong>
-            {pageIndex + 1} از {pageOptions.length}
-          </strong>{" "}
-        </span>
-        <span>
-          | برو به صفحه:{" "}
-          <input
-            type="number"
-            defaultValue={pageIndex + 1}
-            onChange={(e) => {
-              const pageNumber = e.target.value
-                ? Number(e.target.value) - 1
-                : 0;
-              gotoPage(pageNumber);
-            }}
-            style={{ width: "50px" }}
-          />
-        </span>{" "}
-        <select
-          value={pageSize}
-          onChange={(e) => setPageSize(Number(e.target.value))}
-        >
-          {[10, 25, 50].map((pageSize) => (
-            <option key={pageSize} value={pageSize}>
-              نمایش {pageSize}
-            </option>
-          ))}
-        </select>
-      </div>
     </div>
   );
 }
@@ -203,54 +169,108 @@ function EventsTable(props) {
             Header: "",
             accessor: "is_canceled",
             disableFilters: false,
-            width: "20%",
-          },
-          {
-            Header: "",
-            accessor: "uuid",
-            disableFilters: false,
-            width: "5%",
-            Cell: (props) =>
-              props.row.values.status == 1 && !props.row.values.is_canceled ? (
-                <span className="w-3 h-3 inline-block rounded-full text-[11px] font-bold bg-green-500"></span>
-              ) : props.row.values.status == 0 &&
-                props.row.values.is_canceled ? (
-                <span className="w-3 h-3 inline-block rounded-full text-[11px] font-bold bg-gray-500"></span>
-              ) : (
-                <span className="w-3 h-3 inline-block rounded-full text-[11px] font-bold bg-red-500"></span>
-              ),
+            width: "10%",
           },
           {
             Header: "نام شرکت",
             accessor: "company_title",
             disableFilters: false,
-            width: "20%",
+            width: "5%",
           },
           {
-            Header: "عنوان جلسه",
+            Header: "موضوع جلسه",
             accessor: "title",
             disableFilters: false,
-            width: "20%",
+            width: "5%",
           },
           {
-            Header: "تاریخ جلسه",
+            Header: "تاریخ",
             accessor: "timestamp",
             Cell: (props) =>
               moment.unix(props.row.values.timestamp).format("YYYY/MM/DD"),
             disableFilters: false,
-            width: "20%",
+            width: "5%",
           },
           {
-            Header: "وضعیت جلسه",
-            accessor: "status",
-            Cell: (props) =>
-              props.row.values.status == 0 && props.row.values.is_canceled
-                ? "لغو شده"
-                : props.row.values.status == 1 && !props.row.values.is_canceled
-                ? "برگزار شده"
-                : "برگزار نشده",
+            Header: "",
+            accessor: "uuid",
             disableFilters: false,
-            width: "20%",
+            width: "0%",
+          },
+          {
+            Header: "وضعیت",
+            accessor: "status",
+            Cell: (props) => (
+              <div>
+                {props.row.values.status == 1 &&
+                !props.row.values.is_canceled ? (
+                  <div className="flex items-center">
+                    <span className="w-3 h-3 ml-1 inline-block rounded-full text-[11px] font-bold bg-green-500"></span>
+                    <p className="mr-1">برگزار شده</p>
+                  </div>
+                ) : props.row.values.status == 0 &&
+                  props.row.values.is_canceled ? (
+                  <div className="flex items-center">
+                    <span className="w-3 h-3 ml-1 inline-block rounded-full text-[11px] font-bold bg-[#FF4646]"></span>
+                    <p className="mr-1">لغو شده</p>
+                  </div>
+                ) : (
+                  <div className="flex items-center">
+                    <span className="w-3 h-3 ml-1 inline-block rounded-full text-[11px] font-bold bg-[#F9C613]"></span>
+                    <p className="mr-1">در انتظار برگزاری</p>
+                  </div>
+                )}
+              </div>
+            ),
+            disableFilters: false,
+            width: "3%",
+          },
+          {
+            Header: "صورت‌جلسه",
+            accessor: "hast_minutes",
+            disableFilters: false,
+            width: "0%",
+            Cell: (props) => (
+              <>
+                {roleData && CheckIfAccess("see_minute") ? (
+                  props.row.values.hast_minutes ? (
+                    <span>&nbsp;وارد شده&nbsp;</span>
+                  ) : props.row.values.status == 0 &&
+                    props.row.values.is_canceled ? (
+                    <span>
+                      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;لغو
+                      شده&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    </span>
+                  ) : (
+                    <span>وارد نشده</span>
+                  )
+                ) : null}
+              </>
+            ),
+          },
+          {
+            Header: "مشاهده",
+            accessor: "seen",
+            Cell: (props) =>
+              props.row.values.hast_minutes == 0 ||
+              props.row.values.is_canceled ? (
+                <div className=" [text-align:-webkit-center] cursor-no-drop ">
+                  <Image src={UnSeen} />
+                </div>
+              ) : (
+                props.row.values.status == 1 &&
+                !props.row.values.is_canceled && (
+                  <div className="[text-align:-webkit-center]">
+                    <Link
+                      href={`/proceedingMenu/proceedingsList/minutes/${props.row.values.uuid}`}
+                    >
+                      <Image src={Seen} />
+                    </Link>
+                  </div>
+                )
+              ),
+            disableFilters: false,
+            width: "3%",
           },
           // {
           //     Header: "وضعیت جلسه",
@@ -258,48 +278,6 @@ function EventsTable(props) {
           //     disableFilters: false,
           //     width: "20%",
           // },
-          {
-            Header: "",
-            accessor: "hast_minutes",
-            disableFilters: false,
-            width: "5%",
-            Cell: (props) => (
-              <>
-                {roleData && CheckIfAccess("see_minute") ? (
-                  props.row.values.hast_minutes ? (
-                    <Link
-                      href={`/proceedingMenu/proceedingsList/minutes/${props.row.values.uuid}`}
-                    >
-                      <button
-                        type="button"
-                        className="ml-2 inline-flex justify-center rounded-md py-2 px-4 text-sm font-medium text-white shadow-sm bg-[#43a047] hover:bg-[#2d592f] focus:outline-none "
-                      >
-                        <span>&nbsp;مشاهده صورت‌جلسه&nbsp;</span>
-                      </button>
-                    </Link>
-                  ) : props.row.values.status == 0 &&
-                    props.row.values.is_canceled ? (
-                    <button
-                      type="button"
-                      className="inline-flex justify-center py-2 px-4 ml-2 shadow-sm text-sm cursor-text font-medium rounded-md text-white bg-[#c4c4c4]  "
-                    >
-                      <span>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;لغو
-                        شده&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                      </span>
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      className="inline-flex justify-center py-2 px-4 ml-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-500 hover:bg-red-500 focus:outline-none "
-                    >
-                      <span>صورت‌جلسه وارد نشده</span>
-                    </button>
-                  )
-                ) : null}
-              </>
-            ),
-          },
         ],
       },
     ];

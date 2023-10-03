@@ -161,7 +161,11 @@ const PersianWeeklyCalendar = () => {
     <div className="">
       <div className="flex px-1 mt-4 w-full cursor-pointer h-1/3">
         <div className="w-1/2 cursor-auto">
-          <ArrowForwardIosIcon fontSize="small" />
+          <ArrowForwardIosIcon
+            onClick={goToPrevWeek}
+            className="cursor-pointer"
+            fontSize="small"
+          />
           <button onClick={goToPrevWeek} className="text-[#666666] ">
             هفته قبل
           </button>
@@ -170,7 +174,11 @@ const PersianWeeklyCalendar = () => {
           <button onClick={goToNextWeek} className="text-[#666666] text-left">
             هفته بعد
           </button>
-          <ArrowBackIosIcon fontSize="small" />
+          <ArrowBackIosIcon
+            onClick={goToNextWeek}
+            className="cursor-pointer"
+            fontSize="small"
+          />
         </div>
       </div>
       <div className="flex text-[#666666] font-medium mt-4  ml-3 text-center border-[#F0F0F0] leading-6lg:flex-auto">

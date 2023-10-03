@@ -21,6 +21,9 @@ export default function Dashboard() {
   const [searchHasValue, setSearchHasValue] = useState(false);
   const [searchValue, setSearchValue] = useState(false);
   const [searchData, setSearchData] = useState([]);
+  const [allData, setAllData] = useState({});
+  const router = useRouter();
+  var obj = router.query;
 
   useEffect(() => {
     async function getData() {

@@ -4,78 +4,69 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useRouter } from "next/router";
 const PaginationItems = ({ allData }) => {
   const [data, setData] = useState({});
+  const [clicked, setClicked] = useState(1);
   const ListNum = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
   const router = useRouter();
-  const totalPage = allData.last_page;
+  const totalPage = allData?.last_page;
   const PageHandler = (item) => {
+    setClicked(item);
     router.push(`?=${totalPage}-${item}`);
   };
 
-  const FirstPageHndler = (item) => {
+  const FirstPageHndler = () => {
+    setClicked(1);
     router.push(`?=${totalPage}-${1}`);
   };
 
   const LastPageHndler = (item) => {
+    setClicked(totalPage);
     router.push(`?=${totalPage}-${totalPage}`);
   };
   return (
-    <div className="border-t pt-5 flex">
-      {/* <button onClick={() => previousPage()} disabled={!canPreviousPage}>
-        قبلی
-      </button>{" "}
-      <button onClick={() => nextPage()} disabled={!canNextPage}>
-        بعدی
-      </button>{" "} */}
-      {/* <span>
-        صفحه{"   "}
-        <strong>
-          {pageIndex + 1} از {pageOptions.length}
-        </strong>{" "}
-      </span>
-      <span>
-        | برو به صفحه:{" "}
-        <input
-          type="number"
-          defaultValue={pageIndex + 1}
-          onChange={(e) => {
-            const pageNumber = e.target.value ? Number(e.target.value) - 1 : 0;
-            gotoPage(pageNumber);
-          }}
-          style={{ width: "50px" }}
-        />
-      </span> */}
-      <div className="container ">
-        <ul className="flex mr-6 h-20 my-8 rounded-lg">
-          <button onClick={FirstPageHndler}>
-            {
-              <ArrowForwardIosIcon
-                fontSize="medium"
-                className="text-[#aaaaaa]"
-              />
-            }
-          </button>
-          <li className="flex justify-center items-center text-xl cursor-pointer">
-            <div className="flex">
-              {/* {ListNum.map((item, x) => (
-                <p className="flex m-2">{item}</p>
-              ))} */}
-              {ListNum.slice(0, ListNum.indexOf(totalPage) + 1).map(
-                (item, x) => (
-                  <button
-                    onClick={() => PageHandler(item)}
-                    key={x}
-                    className="flex rounded-xl p-4 bg-[#F0F0F0] m-1 font-medium"
-                  >
-                    {item}
-                  </button>
-                )
-              )}
-            </div>
-          </li>
-          <button onClick={LastPageHndler}>
-            {<ArrowBackIosIcon className="text-[#aaaaaa]" fontSize="medium" />}
-          </button>
-        </ul>
+    <div className="pt-5">
+      <div className="container">
+        <div className="w-fit">
+          <ul className="flex mr-6 h-8 items-center my-8 rounded-lg border border-[#CCCCCC] p-4">
+            <button onClick={FirstPageHndler}>
+              {
+                <ArrowForwardIosIcon
+                  fontSize="small"
+                  className="text-[#999999]"
+                />
+              }
+            </button>
+            <li className="flex justify-center items-center text-xl cursor-pointer">
+              <div className="flex items-center content-center text-center">
+                {ListNum.slice(0, ListNum.indexOf(totalPage) + 1).map(
+                  (item, x) => (
+                    <button
+                      onClick={() => PageHandler(item)}
+                      key={x}
+                      className={`${
+                        item == clicked
+                          ? "flex rounded-xl p-4 m-1 font-medium"
+                          : "flex rounded-xl m-1 font-medium"
+                      }`}
+                    >
+                      <p
+                        className={`${
+                          item == clicked
+                            ? "bg-[#E3E3E3] pr-2 pl-2 border rounded-sm"
+                            : ""
+                        }`}
+                      >
+                        {item}
+                      </p>
+                    </button>
+                  )
+                )}
+              </div>
+            </li>
+            <button onClick={LastPageHndler}>
+              {<ArrowBackIosIcon className="text-[#999999]" fontSize="small" />}
+            </button>
+          </ul>
+        </div>
       </div>
     </div>
   );

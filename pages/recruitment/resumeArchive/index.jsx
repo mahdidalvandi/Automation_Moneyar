@@ -39,6 +39,9 @@ export default function ProceedingsList() {
   const [query, setQuery] = useState("");
   const [selectedHashtags, setSelectedHashtags] = useState([]);
   const [selectedHashtagsTitles, setSelectedHashtagsTitles] = useState([]);
+  const [allData, setAllData] = useState({});
+  const router = useRouter();
+  var obj = router.query;
   const filteredTags =
     query === ""
       ? hashtags
@@ -134,14 +137,18 @@ export default function ProceedingsList() {
   }, []);
   const p2e = (s) => s.replace(/[۰-۹]/g, (d) => "۰۱۲۳۴۵۶۷۸۹".indexOf(d));
   const GetData = () => {
-    axios.get(`/api/v1/interview/archived`).then((res) => {
-      setSearchData([]);
-      setLoading(false);
-      setSearchHashtagsData([]);
-      setSearchHasValue(false);
-      setSearchHashtagsHasValue(false);
-      setData(res.data.data);
-    });
+    const updatedPINdex = obj.hasOwnProperty("") ? obj[""].split("-")[1] : 1;
+    axios
+      .get(`/api/v1/interview/archived?page=${updatedPINdex}`)
+      .then((res) => {
+        setSearchData([]);
+        setLoading(false);
+        setSearchHashtagsData([]);
+        setSearchHasValue(false);
+        setSearchHashtagsHasValue(false);
+        setData(res.data.data.data);
+        setAllData(res.data.data);
+      });
   };
 
   if (isLoading || !user || loading) {
@@ -259,6 +266,7 @@ export default function ProceedingsList() {
                   </div>
                 </div>
                 <ResumeArchiveTable
+                  allData={allData}
                   data={searchHasValue ? searchData : data}
                   loadingData={false}
                   isArchived={true}

@@ -4,11 +4,10 @@ import View from "../forms/view";
 import "react-loading-skeleton/dist/skeleton.css";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import { useAuth } from "../../hooks/auth";
-
 import Edit from "../forms/edit";
 import Activation from "../forms/activation";
 
-function Table({ columns, data }) {
+function Table({ columns, data, allData }) {
   const defaultColumn = React.useMemo(
     () => ({
       Filter: DefaultColumnFilter,
@@ -69,7 +68,11 @@ function Table({ columns, data }) {
     {
       columns,
       data,
-      initialState: { pageIndex: 0, hiddenColumns: ["is_active", "himself"] },
+      initialState: {
+        pageIndex: 0,
+        pageSize: 1000000,
+        hiddenColumns: ["is_active", "himself"],
+      },
     },
     // useFilters,
     usePagination
@@ -79,15 +82,15 @@ function Table({ columns, data }) {
 
   // Render the UI for your table
   return (
-    <div className="overflow-x-auto">
+    <div className="">
       <table className="w-full divide-y divide-gray-300" {...getTableProps()}>
-        <thead className="bg-gray-50">
+        <thead className="bg-[#D5E8FF]">
           {headerGroups.map((group, i) => (
             <tr key={i} {...group.getHeaderGroupProps()}>
               {group.headers.map((column) => {
                 return column.hideHeader === false ? null : (
                   <th
-                    className="py-3 pl-2 pr-2 text-center text-sm font-semibold text-gray-900 sm:pr-3"
+                    className="py-3 pl-2 pr-2 text-center font-sans text-sm font-semibold text-[#333333] -sm:pr-3"
                     {...column.getHeaderProps({
                       style: {
                         minWidth: column.minWidth,
@@ -95,9 +98,7 @@ function Table({ columns, data }) {
                       },
                     })}
                   >
-                    <p className="text-l text-center">
-                      {column.render("Header")}
-                    </p>
+                    <p className="text-right mr-6">{column.render("Header")}</p>
 
                     {column.canFilter ? column.render("Filter") : null}
                   </th>
@@ -110,7 +111,11 @@ function Table({ columns, data }) {
           {page.map((row, i) => {
             prepareRow(row);
             return (
-              <tr className="hover:bg-zinc-100" key={i} {...row.getRowProps()}>
+              <tr
+                className={` ${i % 2 === 1 ? "bg-[#E3E3E3]" : ""}`}
+                key={i}
+                {...row.getRowProps()}
+              >
                 {row.cells.map((cell, i) => {
                   return (
                     <td
@@ -128,50 +133,6 @@ function Table({ columns, data }) {
         </tbody>
         <tfoot></tfoot>
       </table>
-      <div className="border-t pt-5 border-gray-200">
-        <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
-          {"<<"}
-        </button>{" "}
-        <button onClick={() => previousPage()} disabled={!canPreviousPage}>
-          قبلی
-        </button>{" "}
-        <button onClick={() => nextPage()} disabled={!canNextPage}>
-          بعدی
-        </button>{" "}
-        <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
-          {">>"}
-        </button>{" "}
-        <span>
-          صفحه{"   "}
-          <strong>
-            {pageIndex + 1} از {pageOptions.length}
-          </strong>{" "}
-        </span>
-        <span>
-          | برو به صفحه:{" "}
-          <input
-            type="number"
-            defaultValue={pageIndex + 1}
-            onChange={(e) => {
-              const pageNumber = e.target.value
-                ? Number(e.target.value) - 1
-                : 0;
-              gotoPage(pageNumber);
-            }}
-            style={{ width: "50px" }}
-          />
-        </span>{" "}
-        <select
-          value={pageSize}
-          onChange={(e) => setPageSize(Number(e.target.value))}
-        >
-          {[10, 25, 50].map((pageSize) => (
-            <option key={pageSize} value={pageSize}>
-              نمایش {pageSize}
-            </option>
-          ))}
-        </select>
-      </div>
     </div>
   );
 }
@@ -213,58 +174,118 @@ function UsersTable(props) {
             accessor: "id",
             disableFilters: false,
             width: "5%",
+            Cell: (props) => (
+              <div>
+                <p className="text-right mr-6">{props.row.values.id}</p>
+              </div>
+            ),
           },
           {
             Header: "نام",
             accessor: "first_name",
             disableFilters: false,
             width: "5%",
+            Cell: (props) => (
+              <div>
+                <p className="text-right mr-6">{props.row.values.first_name}</p>
+              </div>
+            ),
           },
           {
             Header: "نام خانوادگی",
             accessor: "last_name",
             disableFilters: false,
             width: "5%",
+            Cell: (props) => (
+              <div>
+                <p className="text-right mr-6">{props.row.values.last_name}</p>
+              </div>
+            ),
           },
           {
             Header: "سمت",
             accessor: "post_name",
             disableFilters: false,
             width: "5%",
+            Cell: (props) => (
+              <div>
+                <p className="text-right mr-6">{props.row.values.post_name}</p>
+              </div>
+            ),
           },
           {
             Header: " واحد",
             accessor: "department_name",
             disableFilters: false,
             width: "5%",
+            Cell: (props) => (
+              <div>
+                <p className="text-right mr-6">
+                  {props.row.values.department_name}
+                </p>
+              </div>
+            ),
           },
           {
             Header: " شرکت",
             accessor: "company_name",
             disableFilters: false,
             width: "5%",
+            Cell: (props) => (
+              <div>
+                <p className="text-right mr-6">
+                  {props.row.values.company_name}
+                </p>
+              </div>
+            ),
           },
           {
-            Header: "",
+            Header: "مشاهده",
+            accessor: "seen",
+            disableFilters: true,
+            width: "0%",
+            Cell: (props) => (
+              <div className="flex justify-center items-center hover:cursor-pointer">
+                {CheckIfAccess("see_user_details") && (
+                  <View
+                    link="/users/"
+                    className="items-center"
+                    uuid={props.row.values.uuid}
+                  />
+                )}
+              </div>
+            ),
+          },
+          {
+            Header: "ویرایش",
+            accessor: "edit",
+            disableFilters: true,
+            width: "0%",
+            Cell: (props) => (
+              <div className="flex  justify-center items-center hover:cursor-pointer">
+                {CheckIfAccess("edit_user") && (
+                  <div className="">
+                    <Edit link="/users/edit/" uuid={props.row.values.uuid} />
+                  </div>
+                )}
+              </div>
+            ),
+          },
+          {
+            Header: "فعال",
             accessor: "uuid",
             disableFilters: true,
-            width: "10%",
+            width: "3%",
             Cell: (props) => (
-              <>
-                {CheckIfAccess("see_user_details") ? (
-                  <View link="/users/" uuid={props.row.values.uuid} />
-                ) : null}
-                {CheckIfAccess("edit_user") ? (
-                  <Edit link="/users/edit/" uuid={props.row.values.uuid} />
-                ) : null}
-                {CheckIfAccess("edit_role") ? (
+              <div className="flex">
+                {CheckIfAccess("edit_role") && (
                   <Activation
                     himself={props.row.values.himself}
                     isActive={props.row.values.is_active}
                     uuid={props.row.values.uuid}
                   />
-                ) : null}
-              </>
+                )}
+              </div>
             ),
           },
         ],

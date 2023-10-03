@@ -68,6 +68,7 @@ function Table({ columns, data }) {
     {
       columns,
       data,
+      pageSize: 10000,
       initialState: { pageIndex: 0 },
     },
     // useFilters,
@@ -78,9 +79,9 @@ function Table({ columns, data }) {
 
   // Render the UI for your table
   return (
-    <div className="overflow-x-auto">
+    <div className="">
       <table className="w-full divide-y divide-gray-300" {...getTableProps()}>
-        <thead className="bg-gray-50">
+        <thead className="bg-[#D5E8FF]">
           {headerGroups.map((group, i) => (
             <tr key={i} {...group.getHeaderGroupProps()}>
               {group.headers.map((column, i) => {
@@ -110,7 +111,11 @@ function Table({ columns, data }) {
           {page.map((row, i) => {
             prepareRow(row);
             return (
-              <tr key={i} {...row.getRowProps()}>
+              <tr
+                className={` ${i % 2 === 1 ? "bg-[#E3E3E3]" : ""}`}
+                key={i}
+                {...row.getRowProps()}
+              >
                 {row.cells.map((cell, i) => {
                   return (
                     <td
@@ -128,50 +133,6 @@ function Table({ columns, data }) {
         </tbody>
         <tfoot></tfoot>
       </table>
-      <div className="border-t pt-5 border-gray-200">
-        <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
-          {"<<"}
-        </button>{" "}
-        <button onClick={() => previousPage()} disabled={!canPreviousPage}>
-          قبلی
-        </button>{" "}
-        <button onClick={() => nextPage()} disabled={!canNextPage}>
-          بعدی
-        </button>{" "}
-        <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
-          {">>"}
-        </button>{" "}
-        <span>
-          صفحه{"   "}
-          <strong>
-            {pageIndex + 1} از {pageOptions.length}
-          </strong>{" "}
-        </span>
-        <span>
-          | برو به صفحه:{" "}
-          <input
-            type="number"
-            defaultValue={pageIndex + 1}
-            onChange={(e) => {
-              const pageNumber = e.target.value
-                ? Number(e.target.value) - 1
-                : 0;
-              gotoPage(pageNumber);
-            }}
-            style={{ width: "50px" }}
-          />
-        </span>{" "}
-        <select
-          value={pageSize}
-          onChange={(e) => setPageSize(Number(e.target.value))}
-        >
-          {[10, 25, 50].map((pageSize) => (
-            <option key={pageSize} value={pageSize}>
-              نمایش {pageSize}
-            </option>
-          ))}
-        </select>
-      </div>
     </div>
   );
 }

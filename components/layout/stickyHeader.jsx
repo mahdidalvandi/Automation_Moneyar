@@ -16,6 +16,7 @@ import WeatherWidget_Ip from "../../components/forms/weather";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import avatar from "../../public/images/avatar.png";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import LockIcon from "@mui/icons-material/Lock";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 function StickyHeader() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -81,7 +82,7 @@ function StickyHeader() {
             </select>
           ) : null}
           {user ? (
-            asPath == "/dashboard" ? (
+            asPath != "/logOut" ? (
               <div
                 className="bg-[#F0F0F0] ml-4 rounded-md
                 cursor-pointer flex justify-center 
@@ -89,7 +90,7 @@ function StickyHeader() {
               >
                 <div
                   onClick={openDrop}
-                  className="w-42 h-9 rounded-md bg-[#F0F0F0] relative shadow flex justify-center items-center"
+                  className="w-42 h-9 rounded-md bg-[#E3E3E3] relative shadow flex justify-center items-center"
                 >
                   <div className="relative w-full py-3 transform transition">
                     <div className="flex w-full justify-center items-center space-x-3 cursor-pointer">
@@ -108,34 +109,50 @@ function StickyHeader() {
                       </div>
                     </div>
                     {opened && (
-                      <div className="absolute w-full rounded-md border-t-2 border-gray-200 px-2 py-3 bg-[#F0F0F0] shadow mt-">
-                        <ul className="space-y-2">
-                          <li className="font-medium">
-                            <a
-                              href={`/users/profile`}
-                              className="flex items-center transform hover:border-[#22aa5b] transition-colors duration-200 border-r-4 border-transparent"
-                            >
-                              <div className="mr-3 p-1">
-                                <AccountCircleIcon className="text-[#666666]" />
-                              </div>
-                              پروفایل
-                            </a>
-                          </li>
-                          <li className="font-medium">
-                            <a
-                              onClick={logoutHandler}
-                              className="flex items-center transform transition-colors duration-200
+                      <>
+                        {/* <div className="h-0.5 w-28 mr-5 mt-1 items-center justify-center content-center text-green-400 bg-green-400" /> */}
+                        <div className="absolute w-full rounded-md border-gray-200  py-3 bg-[#E3E3E3] shadow ">
+                          <ul className="space-y-2">
+                            <li className="font-medium">
+                              <a
+                                href={`/users/profile`}
+                                className="flex items-center transform hover:border-[#22aa5b] transition-colors duration-200 border-r-4 border-transparent"
+                              >
+                                <div className="mr-3 p-1">
+                                  <AccountCircleIcon className="text-[#666666]" />
+                                </div>
+                                <p className="text-[#333333]">پروفایل</p>
+                              </a>
+                            </li>
+                            <li className="font-medium">
+                              <a
+                                href={`/users/changePassword`}
+                                className="flex items-center transform transition-colors duration-200
                               border-r-4 border-transparent 
                             hover:border-[#22aa5b]"
-                            >
-                              <div className="mr-3 p-1">
-                                <ExitToAppIcon className="text-[#666666]" />
-                              </div>
-                              خروج
-                            </a>
-                          </li>
-                        </ul>
-                      </div>
+                              >
+                                <div className="mr-3 p-1">
+                                  <ExitToAppIcon className="text-[#666666]" />
+                                </div>
+                                <p className="text-[#333333]">تغییر رمز عبور</p>
+                              </a>
+                            </li>
+                            <li className="font-medium">
+                              <a
+                                onClick={logoutHandler}
+                                className="flex items-center transform transition-colors duration-200
+                                border-r-4 border-transparent 
+                              hover:border-[#22aa5b]"
+                              >
+                                <div className="mr-3 p-1">
+                                  <LockIcon className="text-[#666666]" />
+                                </div>
+                                <p className="text-[#333333]">خروج</p>
+                              </a>
+                            </li>
+                          </ul>
+                        </div>
+                      </>
                     )}
                   </div>
                 </div>

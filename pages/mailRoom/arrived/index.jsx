@@ -18,10 +18,6 @@ import persian_fa from "react-date-object/locales/persian_fa";
 import React from "react";
 import Forbidden from "../../../components/forms/forbidden";
 
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
-
 export default function Dashboard() {
   const { asPath } = useRouter();
   const [data, setData] = useState({});
@@ -41,7 +37,9 @@ export default function Dashboard() {
   const [currentUserActions, setCurrentUserActions] = useState();
   const [searchHasValue, setSearchHasValue] = useState(false);
   const [searchData, setSearchData] = useState([]);
-
+  const [allData, setAllData] = useState({});
+  const router = useRouter();
+  var obj = router.query;
   const { user, isLoading } = useAuth({
     middleware: "auth",
     redirectIfAuthenticated: "/",
@@ -98,18 +96,19 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    if (loadingData) {
-      getData();
+    async function getData() {
+      const updatedPINdex = obj.hasOwnProperty("") ? obj[""].split("-")[1] : 1;
+      await axios
+        .get(`/api/v1/mailroom/list?type=0&page=${updatedPINdex}`)
+        .then((response) => {
+          setData(response.data.data.data);
+          setAllData(response.data.data);
+          setDefaultData(response.data.data.data);
+          setLoadingData(false);
+        });
     }
-  }, []);
-  async function getData() {
-    await axios.get(`/api/v1/mailroom/list?type=0`).then((response) => {
-      setData(response.data.data.reverse());
-      setDefaultData(response.data.data.reverse());
-      setLoadingData(false);
-      const reversed = response.data.data.reverse();
-    });
-  }
+    getData();
+  }, [obj]);
   const p2e = (s) => s.replace(/[۰-۹]/g, (d) => "۰۱۲۳۴۵۶۷۸۹".indexOf(d));
   function search(val) {
     if (data) {
@@ -227,6 +226,7 @@ export default function Dashboard() {
                 </form>
               </div>
               <MailRoomArrivedTable
+                allData={allData}
                 data={searchHasValue ? searchData : data}
                 loadingData={loadingData}
               />

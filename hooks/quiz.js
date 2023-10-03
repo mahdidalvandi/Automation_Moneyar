@@ -13,11 +13,9 @@ export const useQuiz = () => {
     const [ quiz, setQuiz] = useState([]);
 
     const getQuizList = async ({ setErrors, setStatus, setLoading, ...props }) => {
-
         setStatus(null)
         setLoading(true)
         setErrors([])
-
         axios
             .get('/quiz/GetActivequiz', {
                 headers: { Authorization: `Bearer ${token}` }
@@ -34,7 +32,7 @@ export const useQuiz = () => {
     }
 
     const getQuiz = async ({ setErrors, setStatus, setLoading, ...props }) => {
-
+        
         setStatus(null)
         setLoading(true)
         setErrors([])

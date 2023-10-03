@@ -1,5 +1,13 @@
 export default function InputBox(props) {
-  const { className, title, style, inputStyle, titleStyle, error } = props;
+  const {
+    className,
+    title,
+    style,
+    inputStyle,
+    titleStyle,
+    error,
+    placeholder,
+  } = props;
   return (
     <div
       className={`${style ?? ""} ${
